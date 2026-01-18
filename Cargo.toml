@@ -1,0 +1,53 @@
+[package]
+name = "tokasim-rs"
+version = "0.1.0"
+edition = "2021"
+authors = ["Francisco Molina-Burgos <fmolina@avermex.com>"]
+description = "Tokamak Fusion Reactor Hyperrealistic Simulator - Deterministic Physics Engine in Rust"
+license = "MIT"
+repository = "https://github.com/Yatrogenesis/tokasim-rs"
+keywords = ["fusion", "tokamak", "plasma", "physics", "simulation"]
+categories = ["science", "simulation"]
+
+[dependencies]
+# Core math - keeping dependencies minimal
+# Phase 1: Zero external deps for core physics
+# Phase 2: Optional rayon for parallelization
+
+[dev-dependencies]
+# Testing only
+
+[features]
+default = []
+parallel = []    # Future: rayon parallelization
+simd = []        # Future: SIMD optimizations
+yatronet = []    # Future: YatroNet distributed computing
+nl-control = []  # NL-SRE integration for natural language control
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+
+[profile.dev]
+opt-level = 1
+
+[[bin]]
+name = "tokasim"
+path = "src/main.rs"
+
+[[bin]]
+name = "tokasim-bench"
+path = "src/bin/benchmark.rs"
+
+[workspace]
+members = [
+    "crates/tokasim-core",
+    "crates/tokasim-particle",
+    "crates/tokasim-field",
+    "crates/tokasim-mhd",
+    "crates/tokasim-nuclear",
+    "crates/tokasim-control",
+    "crates/tokasim-geometry",
+]
