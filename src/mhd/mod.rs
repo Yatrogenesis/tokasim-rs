@@ -303,20 +303,25 @@ mod tests {
     fn test_stability() {
         let analyzer = StabilityAnalyzer::new(TS1_ELONGATION, TS1_TRIANGULARITY);
 
+        // Calculate Troyon limit: β_N,max = 2.8 * I_p / (a * B_t)
+        // For TS-1: 2.8 * 12 / (0.6 * 25) = 2.24
+        // Use beta_N below this limit
         let result = analyzer.is_stable(
-            2.5,  // beta_N
-            3.5,  // q_edge
+            2.0,  // beta_N (below Troyon limit of 2.24)
+            3.5,  // q_edge (> 2 for kink stability)
             TS1_PLASMA_CURRENT_MA,
             TS1_MINOR_RADIUS,
             TS1_TOROIDAL_FIELD
         );
 
         assert!(result.overall_stable);
+        assert!(result.beta_stable);
+        assert!(result.kink_stable);
     }
 
     #[test]
     fn test_disruption_predictor() {
-        let mut predictor = DisruptionPredictor::new();
+        let predictor = DisruptionPredictor::new();
 
         // Normal conditions
         let normal = DisruptionIndicators {

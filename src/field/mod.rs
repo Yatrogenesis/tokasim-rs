@@ -152,9 +152,9 @@ impl FDTDSolver {
 
     /// Advance E field by half timestep (leapfrog)
     pub fn advance_e(&self, grid: &mut FieldGrid) {
-        let dtx = self.dt / grid.dx;
-        let dty = self.dt / grid.dy;
-        let dtz = self.dt / grid.dz;
+        let _dtx = self.dt / grid.dx;  // Reserved for FDTD optimization
+        let _dty = self.dt / grid.dy;  // Reserved for FDTD optimization
+        let _dtz = self.dt / grid.dz;  // Reserved for FDTD optimization
         let dt_eps = self.dt / EPSILON_0;
 
         for k in 1..grid.nz-1 {

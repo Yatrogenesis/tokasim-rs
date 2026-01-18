@@ -18,7 +18,7 @@
 //! - No "hallucinations" or unpredictable behavior
 //! - Auditable for nuclear regulators
 
-use crate::types::{Vec3, TokamakConfig, SimulationState, SimulationStatus};
+// Note: Types available from crate::types if needed
 
 /// Plasma control system
 pub struct PlasmaController {

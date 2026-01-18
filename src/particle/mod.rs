@@ -136,6 +136,7 @@ pub struct ParticlePopulation {
 }
 
 #[derive(Debug, Default, Clone)]
+#[allow(dead_code)]  // Fields reserved for analytics/visualization
 struct PopulationStats {
     total_particles: usize,
     active_particles: usize,

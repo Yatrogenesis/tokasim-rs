@@ -37,17 +37,5 @@ opt-level = 1
 name = "tokasim"
 path = "src/main.rs"
 
-[[bin]]
-name = "tokasim-bench"
-path = "src/bin/benchmark.rs"
-
-[workspace]
-members = [
-    "crates/tokasim-core",
-    "crates/tokasim-particle",
-    "crates/tokasim-field",
-    "crates/tokasim-mhd",
-    "crates/tokasim-nuclear",
-    "crates/tokasim-control",
-    "crates/tokasim-geometry",
-]
+# Workspace members will be added in Phase 2
+# For now, monolithic structure for simplicity
