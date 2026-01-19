@@ -51,6 +51,8 @@ pub mod stochastic;
 pub mod pra;
 pub mod cost;
 pub mod usd;
+pub mod neutronics;
+pub mod cfd;
 
 // Re-exports
 pub use constants::*;

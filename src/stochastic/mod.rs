@@ -141,6 +141,23 @@ impl RandomGenerator {
     pub fn log_normal(&mut self, mu: f64, sigma: f64) -> f64 {
         (mu + sigma * self.normal()).exp()
     }
+
+    /// Generate isotropic random direction (unit vector on sphere)
+    ///
+    /// Uses the method of Marsaglia (1972) for uniform distribution on S²
+    pub fn isotropic_direction(&mut self) -> (f64, f64, f64) {
+        // Generate two uniform random numbers and reject if outside unit disk
+        loop {
+            let u1 = 2.0 * self.uniform() - 1.0;
+            let u2 = 2.0 * self.uniform() - 1.0;
+            let s = u1 * u1 + u2 * u2;
+
+            if s < 1.0 {
+                let factor = 2.0 * (1.0 - s).sqrt();
+                return (u1 * factor, u2 * factor, 1.0 - 2.0 * s);
+            }
+        }
+    }
 }
 
 impl Default for RandomGenerator {
