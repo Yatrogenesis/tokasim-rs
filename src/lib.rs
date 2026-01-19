@@ -46,6 +46,11 @@ pub mod simulator;
 pub mod optimizer;
 pub mod visualization;
 pub mod components;
+pub mod materials;
+pub mod stochastic;
+pub mod pra;
+pub mod cost;
+pub mod usd;
 
 // Re-exports
 pub use constants::*;

@@ -9,6 +9,10 @@
 //! ∇·E = ρ/ε₀
 //! ∇·B = 0
 
+pub mod maxwell_stress;
+
+pub use maxwell_stress::*;
+
 use crate::types::Vec3;
 use crate::constants::*;
 
