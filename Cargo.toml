@@ -14,6 +14,9 @@ categories = ["science", "simulation"]
 # Phase 1: Zero external deps for core physics
 # Phase 2: Optional rayon for parallelization
 
+# Required for optimizer NSGA-II
+rand = "0.8"
+
 [dev-dependencies]
 # Testing only
 

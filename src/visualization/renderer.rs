@@ -7,13 +7,13 @@ use std::fmt::Write;
 
 /// SVG document builder
 pub struct SvgRenderer {
-    width: u32,
-    height: u32,
-    content: String,
-    defs: String,
-    scale: f64,
-    offset_x: f64,
-    offset_y: f64,
+    pub width: u32,
+    pub height: u32,
+    pub content: String,
+    pub defs: String,
+    pub scale: f64,
+    pub offset_x: f64,
+    pub offset_y: f64,
 }
 
 impl SvgRenderer {

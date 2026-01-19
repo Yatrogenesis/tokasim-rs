@@ -16,6 +16,7 @@ pub use safety::*;
 pub use redundancy::*;
 pub use inventory::*;
 
+#[allow(unused_imports)]
 use std::collections::HashMap;
 
 /// System-wide component status

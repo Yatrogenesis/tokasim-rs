@@ -43,11 +43,18 @@ pub mod nuclear;
 pub mod control;
 pub mod geometry;
 pub mod simulator;
+pub mod optimizer;
+pub mod visualization;
+pub mod components;
 
 // Re-exports
 pub use constants::*;
 pub use types::*;
 pub use simulator::TokamakSimulator;
+pub use optimizer::{
+    ReactorParameterSpace, ReactorDesign, NSGA2Optimizer,
+    CostModel, ScalingLaws, InfrastructureCalculator, ReportGenerator
+};
 
 /// TOKASIM version
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");

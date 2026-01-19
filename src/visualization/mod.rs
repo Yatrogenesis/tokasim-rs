@@ -20,13 +20,13 @@ pub mod dashboard;
 pub mod animation;
 
 pub use renderer::*;
-pub use projections::*;
+pub use projections::project_to_2d;
 pub use components::*;
-pub use particles::*;
-pub use fields::*;
-pub use dashboard::*;
-pub use animation::*;
+pub use particles::{ParticleType, ParticleTrajectory, ParticleRenderer};
+pub use dashboard::{StatusIndicator, Dashboard};
+pub use animation::{AnimationConfig, AnimationGenerator, AnimationFrame};
 
+#[allow(unused_imports)]
 use crate::types::Vec3;
 use std::f64::consts::PI;
 

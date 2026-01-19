@@ -248,7 +248,7 @@ impl RedundancyAnalysis {
                 let k = c.primary_count;
                 // Simplified availability for k-out-of-n
                 if n == 0 { return 0.0; }
-                let p_single = 0.999;  // Single component availability
+                let _p_single = 0.999;  // Single component availability
                 // For k-out-of-n: sum of binomial(n,i) * p^i * (1-p)^(n-i) for i >= k
                 1.0 - (0.001_f64).powi((n - k + 1) as i32)
             })
