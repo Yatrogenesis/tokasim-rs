@@ -1,5 +1,8 @@
 # TOKASIM-RS
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18301323.svg)](https://doi.org/10.5281/zenodo.18301323)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 **Tokamak Fusion Reactor Hyperrealistic Simulator**
 
 A deterministic physics engine in Rust, competing with NVIDIA Omniverse + Commonwealth Fusion Systems' SPARC digital twin.
@@ -95,6 +98,21 @@ Natural Language → NL-SRE → PIRS predicates → Control Actions
 Example:
 - Input: "Aumenta la potencia si la densidad cae por debajo de 2×10²⁰"
 - PIRS: `control_rule(increase_power, [conditions([less_than(Density, 2e20)])], actions([adjust_heating(ICRF, 5e6)]))`
+
+## Citation
+
+If you use TOKASIM-RS in your research, please cite:
+
+```bibtex
+@software{molina_burgos_2026_tokasim,
+  author       = {Molina-Burgos, Francisco},
+  title        = {TOKASIM-RS: Tokamak Fusion Reactor Hyperrealistic Simulator},
+  year         = 2026,
+  publisher    = {Zenodo},
+  doi          = {10.5281/zenodo.18301323},
+  url          = {https://doi.org/10.5281/zenodo.18301323}
+}
+```
 
 ## Author
 
