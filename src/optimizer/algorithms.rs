@@ -349,8 +349,8 @@ mod tests {
             ObjectiveType::Maximize("Q".to_string()),
             ObjectiveType::Minimize("CAPEX".to_string()),
         ];
-        let optimizer = NSGA2Optimizer::new(10, 5, objectives);
-        let space = ReactorParameterSpace::medium_reactor();
+        let _optimizer = NSGA2Optimizer::new(10, 5, objectives);
+        let _space = ReactorParameterSpace::medium_reactor();
 
         // Test would run optimization
         // let results = optimizer.optimize(&space);
