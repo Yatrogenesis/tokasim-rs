@@ -6,6 +6,14 @@
 //!
 //! Grad-Shafranov equation for equilibrium:
 //! Δ*ψ = -μ₀R²(dp/dψ) - F(dF/dψ)
+//!
+//! ## Submodules
+//!
+//! - `grad_shafranov`: First-principles 2D equilibrium solver
+
+pub mod grad_shafranov;
+
+pub use grad_shafranov::{GradShafranovSolver, SolverResult, FluxSurface, GSGrid, ProfileSpec};
 
 use crate::types::Vec3;
 

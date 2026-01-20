@@ -55,6 +55,7 @@ pub mod neutronics;
 pub mod cfd;
 pub mod coupling;
 pub mod pwi;
+pub mod transport;
 
 // Re-exports
 pub use constants::*;
