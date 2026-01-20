@@ -58,5 +58,10 @@ name = "tokasim-explorer"
 path = "src/bin/tokasim_explorer.rs"
 required-features = ["bevy-viz"]
 
+[[bin]]
+name = "tokasim-explorer-v2"
+path = "src/bin/tokasim_explorer_v2.rs"
+required-features = ["bevy-viz"]
+
 # Workspace members will be added in Phase 2
 # For now, monolithic structure for simplicity

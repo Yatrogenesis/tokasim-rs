@@ -41,12 +41,14 @@ use std::f32::consts::{PI, TAU};
 struct Plasma;
 
 #[derive(Component)]
+#[allow(dead_code)]
 struct PlasmaWireframe;
 
 #[derive(Component)]
 struct VacuumVessel;
 
 #[derive(Component)]
+#[allow(dead_code)]
 struct TFCoil(usize);
 
 #[derive(Component)]
@@ -114,6 +116,7 @@ impl Default for TokamakParams {
 // ============================================================================
 
 #[derive(Resource, Default)]
+#[allow(dead_code)]
 struct PhysicsLimits {
     // Calculated limits
     aspect_ratio: f32,
@@ -156,7 +159,7 @@ impl PhysicsLimits {
         let r0 = params.major_radius;
         let a = params.minor_radius;
         let kappa = params.elongation;
-        let delta = params.triangularity;
+        let _delta = params.triangularity;
         let bt = params.toroidal_field;
         let ip = params.plasma_current;  // MA
         let ne = params.density;         // 10²⁰ m⁻³
@@ -374,7 +377,7 @@ impl Default for ControlSystems {
 }
 
 impl ControlSystems {
-    fn update(&mut self, limits: &PhysicsLimits, params: &TokamakParams) {
+    fn update(&mut self, limits: &PhysicsLimits, _params: &TokamakParams) {
         // Determine instability based on limit violations
         let old_instability = self.instability_type;
 
@@ -430,6 +433,7 @@ impl ControlSystems {
 // ============================================================================
 
 #[derive(Resource)]
+#[allow(dead_code)]
 struct HeatMapState {
     // View settings
     enabled: bool,
@@ -522,6 +526,7 @@ impl ColorMapType {
         }
     }
 
+    #[allow(dead_code)]
     fn name(&self) -> &'static str {
         match self {
             ColorMapType::Plasma => "Plasma",
@@ -564,6 +569,7 @@ impl HeatMapState {
     }
 
     /// Calculate density at normalized radius r/a
+    #[allow(dead_code)]
     fn density_at(&self, rho: f32) -> f32 {
         let rho_clamped = rho.clamp(0.0, 1.0);
         // Density profile is typically flatter than temperature
@@ -572,6 +578,7 @@ impl HeatMapState {
     }
 
     /// Calculate pressure at normalized radius (proxy for intensity)
+    #[allow(dead_code)]
     fn pressure_at(&self, rho: f32) -> f32 {
         self.temperature_at(rho) * self.density_at(rho)
     }
@@ -1017,7 +1024,7 @@ fn spawn_slice_markers(
     materials: &mut ResMut<Assets<StandardMaterial>>,
     r0: f32,
     a: f32,
-    kappa: f32,
+    _kappa: f32,
     phi: f32,
     width: f32,
 ) {
