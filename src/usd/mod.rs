@@ -652,6 +652,670 @@ impl Default for TimeVaryingExporter {
     }
 }
 
+// ============================================================================
+// USD DATA INGESTION (DIGITAL TWIN INPUT)
+// ============================================================================
+
+/// Sensor data point from USD time sample
+#[derive(Debug, Clone)]
+pub struct SensorReading {
+    /// Time of measurement (s)
+    pub time: f64,
+    /// Sensor ID/name
+    pub sensor_id: String,
+    /// Measured value
+    pub value: f64,
+    /// Uncertainty (if available)
+    pub uncertainty: Option<f64>,
+}
+
+/// Physics state from USD physics schema
+#[derive(Debug, Clone)]
+pub struct PhysicsState {
+    /// Position (m)
+    pub position: Vec3,
+    /// Velocity (m/s)
+    pub velocity: Vec3,
+    /// Angular velocity (rad/s)
+    pub angular_velocity: Vec3,
+    /// Mass (kg)
+    pub mass: f64,
+    /// Temperature (K)
+    pub temperature: f64,
+}
+
+/// Material state for surface tracking
+#[derive(Debug, Clone)]
+pub struct MaterialState {
+    /// Surface ID
+    pub surface_id: String,
+    /// Erosion depth (m)
+    pub erosion_depth: f64,
+    /// Deposited layer thickness (m)
+    pub deposition_thickness: f64,
+    /// Surface temperature (K)
+    pub surface_temperature: f64,
+    /// Hydrogen retention (atoms/m²)
+    pub h_retention: f64,
+}
+
+/// Plasma diagnostic data from USD
+#[derive(Debug, Clone)]
+pub struct PlasmaDiagnostics {
+    /// Time (s)
+    pub time: f64,
+    /// Plasma current (A)
+    pub ip: Option<f64>,
+    /// Central electron temperature (keV)
+    pub te0: Option<f64>,
+    /// Central ion temperature (keV)
+    pub ti0: Option<f64>,
+    /// Central electron density (m⁻³)
+    pub ne0: Option<f64>,
+    /// Beta poloidal
+    pub beta_p: Option<f64>,
+    /// Beta toroidal
+    pub beta_t: Option<f64>,
+    /// Internal inductance
+    pub li: Option<f64>,
+    /// Safety factor at 95% flux
+    pub q95: Option<f64>,
+    /// Stored energy (J)
+    pub w_mhd: Option<f64>,
+    /// Plasma position R (m)
+    pub r_geo: Option<f64>,
+    /// Plasma position Z (m)
+    pub z_geo: Option<f64>,
+}
+
+/// Coil data from USD
+#[derive(Debug, Clone)]
+pub struct CoilData {
+    /// Coil name
+    pub name: String,
+    /// Current (A)
+    pub current: f64,
+    /// Voltage (V)
+    pub voltage: f64,
+    /// Temperature (K)
+    pub temperature: f64,
+    /// Field at conductor (T)
+    pub b_max: f64,
+}
+
+/// Complete digital twin state imported from USD
+#[derive(Debug, Clone)]
+pub struct DigitalTwinState {
+    /// Timestamp
+    pub time: f64,
+    /// Plasma diagnostics
+    pub plasma: PlasmaDiagnostics,
+    /// TF coil data
+    pub tf_coils: Vec<CoilData>,
+    /// PF coil data
+    pub pf_coils: Vec<CoilData>,
+    /// Central solenoid data
+    pub cs_data: Option<CoilData>,
+    /// First wall material state
+    pub first_wall: Vec<MaterialState>,
+    /// Divertor material state
+    pub divertor: Vec<MaterialState>,
+    /// Sensor readings
+    pub sensors: Vec<SensorReading>,
+}
+
+impl Default for PlasmaDiagnostics {
+    fn default() -> Self {
+        Self {
+            time: 0.0,
+            ip: None,
+            te0: None,
+            ti0: None,
+            ne0: None,
+            beta_p: None,
+            beta_t: None,
+            li: None,
+            q95: None,
+            w_mhd: None,
+            r_geo: None,
+            z_geo: None,
+        }
+    }
+}
+
+impl Default for DigitalTwinState {
+    fn default() -> Self {
+        Self {
+            time: 0.0,
+            plasma: PlasmaDiagnostics::default(),
+            tf_coils: Vec::new(),
+            pf_coils: Vec::new(),
+            cs_data: None,
+            first_wall: Vec::new(),
+            divertor: Vec::new(),
+            sensors: Vec::new(),
+        }
+    }
+}
+
+/// USD Reader for data ingestion
+///
+/// Parses USD ASCII format to extract physics and sensor data
+/// for digital twin feedback loop.
+pub struct UsdReader {
+    content: String,
+    #[allow(dead_code)]
+    current_pos: usize, // Reserved for streaming parser in future
+}
+
+impl UsdReader {
+    /// Create reader from USD content string
+    pub fn from_string(content: String) -> Self {
+        Self {
+            content,
+            current_pos: 0,
+        }
+    }
+
+    /// Create reader from file
+    pub fn from_file(path: &str) -> std::io::Result<Self> {
+        let content = std::fs::read_to_string(path)?;
+        Ok(Self::from_string(content))
+    }
+
+    /// Parse complete digital twin state from USD
+    pub fn parse_digital_twin_state(&mut self) -> Result<DigitalTwinState, String> {
+        let mut state = DigitalTwinState::default();
+
+        // Parse time
+        if let Some(time) = self.find_attribute_float("time") {
+            state.time = time;
+            state.plasma.time = time;
+        }
+
+        // Parse plasma diagnostics
+        state.plasma = self.parse_plasma_diagnostics()?;
+
+        // Parse coil data
+        state.tf_coils = self.parse_coil_array("TFCoil")?;
+        state.pf_coils = self.parse_coil_array("PFCoil")?;
+
+        // Parse material states
+        state.first_wall = self.parse_material_states("FirstWall")?;
+        state.divertor = self.parse_material_states("Divertor")?;
+
+        // Parse sensor readings
+        state.sensors = self.parse_sensor_readings()?;
+
+        Ok(state)
+    }
+
+    /// Parse plasma diagnostic data
+    fn parse_plasma_diagnostics(&self) -> Result<PlasmaDiagnostics, String> {
+        let mut diag = PlasmaDiagnostics::default();
+
+        diag.ip = self.find_attribute_float("plasma:current");
+        diag.te0 = self.find_attribute_float("plasma:te0_keV");
+        diag.ti0 = self.find_attribute_float("plasma:ti0_keV");
+        diag.ne0 = self.find_attribute_float("plasma:ne0_m3");
+        diag.beta_p = self.find_attribute_float("plasma:beta_p");
+        diag.beta_t = self.find_attribute_float("plasma:beta_t");
+        diag.li = self.find_attribute_float("plasma:li");
+        diag.q95 = self.find_attribute_float("plasma:q95");
+        diag.w_mhd = self.find_attribute_float("plasma:w_mhd");
+        diag.r_geo = self.find_attribute_float("plasma:r_geo");
+        diag.z_geo = self.find_attribute_float("plasma:z_geo");
+
+        Ok(diag)
+    }
+
+    /// Parse coil data array
+    fn parse_coil_array(&self, prefix: &str) -> Result<Vec<CoilData>, String> {
+        let mut coils = Vec::new();
+
+        // Find all coils matching prefix
+        for i in 0..100 {
+            let name = format!("{}_{:02}", prefix, i);
+            if let Some(current) = self.find_attribute_float(&format!("{}:current", name)) {
+                coils.push(CoilData {
+                    name: name.clone(),
+                    current,
+                    voltage: self.find_attribute_float(&format!("{}:voltage", name)).unwrap_or(0.0),
+                    temperature: self.find_attribute_float(&format!("{}:temperature", name)).unwrap_or(4.5),
+                    b_max: self.find_attribute_float(&format!("{}:b_max", name)).unwrap_or(0.0),
+                });
+            } else {
+                break;
+            }
+        }
+
+        Ok(coils)
+    }
+
+    /// Parse material state array
+    fn parse_material_states(&self, section: &str) -> Result<Vec<MaterialState>, String> {
+        let mut states = Vec::new();
+
+        for i in 0..1000 {
+            let base = format!("{}_{:04}", section, i);
+            if let Some(erosion) = self.find_attribute_float(&format!("{}:erosion_depth", base)) {
+                states.push(MaterialState {
+                    surface_id: base.clone(),
+                    erosion_depth: erosion,
+                    deposition_thickness: self.find_attribute_float(&format!("{}:deposition", base)).unwrap_or(0.0),
+                    surface_temperature: self.find_attribute_float(&format!("{}:temperature", base)).unwrap_or(300.0),
+                    h_retention: self.find_attribute_float(&format!("{}:h_retention", base)).unwrap_or(0.0),
+                });
+            } else {
+                break;
+            }
+        }
+
+        Ok(states)
+    }
+
+    /// Parse sensor readings
+    fn parse_sensor_readings(&self) -> Result<Vec<SensorReading>, String> {
+        let mut readings = Vec::new();
+
+        // Look for sensor data patterns
+        let sensor_pattern = "custom double sensor:";
+        let mut pos = 0;
+
+        while let Some(idx) = self.content[pos..].find(sensor_pattern) {
+            let start = pos + idx + sensor_pattern.len();
+
+            // Extract sensor ID and value
+            if let Some(end) = self.content[start..].find('=') {
+                let sensor_id = self.content[start..start + end].trim().to_string();
+
+                // Find the value
+                let value_start = start + end + 1;
+                if let Some(value_end) = self.content[value_start..].find('\n') {
+                    if let Ok(value) = self.content[value_start..value_start + value_end].trim().parse::<f64>() {
+                        readings.push(SensorReading {
+                            time: self.find_attribute_float("time").unwrap_or(0.0),
+                            sensor_id,
+                            value,
+                            uncertainty: None,
+                        });
+                    }
+                }
+            }
+
+            pos = start;
+        }
+
+        Ok(readings)
+    }
+
+    /// Find and parse a float attribute
+    fn find_attribute_float(&self, name: &str) -> Option<f64> {
+        // Look for pattern: float/double <name> = <value>
+        let patterns = [
+            format!("float {} = ", name),
+            format!("double {} = ", name),
+            format!("custom float {} = ", name),
+            format!("custom double {} = ", name),
+        ];
+
+        for pattern in &patterns {
+            if let Some(idx) = self.content.find(pattern) {
+                let start = idx + pattern.len();
+                // Find end of value (newline or comma)
+                let end = self.content[start..].find(|c: char| c == '\n' || c == ',' || c == ')');
+                if let Some(end_idx) = end {
+                    let value_str = self.content[start..start + end_idx].trim();
+                    if let Ok(value) = value_str.parse::<f64>() {
+                        return Some(value);
+                    }
+                }
+            }
+        }
+        None
+    }
+
+    /// Find and parse a float3 attribute
+    pub fn find_attribute_float3(&self, name: &str) -> Option<Vec3> {
+        let patterns = [
+            format!("float3 {} = ", name),
+            format!("point3f {} = ", name),
+            format!("vector3f {} = ", name),
+        ];
+
+        for pattern in &patterns {
+            if let Some(idx) = self.content.find(pattern) {
+                let start = idx + pattern.len();
+                // Find opening paren
+                if let Some(paren_start) = self.content[start..].find('(') {
+                    let vec_start = start + paren_start + 1;
+                    if let Some(paren_end) = self.content[vec_start..].find(')') {
+                        let vec_str = &self.content[vec_start..vec_start + paren_end];
+                        let parts: Vec<&str> = vec_str.split(',').collect();
+                        if parts.len() == 3 {
+                            if let (Ok(x), Ok(y), Ok(z)) = (
+                                parts[0].trim().parse::<f64>(),
+                                parts[1].trim().parse::<f64>(),
+                                parts[2].trim().parse::<f64>(),
+                            ) {
+                                return Some(Vec3::new(x, y, z));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        None
+    }
+
+    /// Parse time samples for an attribute
+    pub fn parse_time_samples(&self, attr_name: &str) -> Vec<(f64, f64)> {
+        let mut samples = Vec::new();
+
+        let pattern = format!("{}.timeSamples = {{", attr_name);
+        if let Some(start_idx) = self.content.find(&pattern) {
+            let search_start = start_idx + pattern.len();
+            if let Some(end_idx) = self.content[search_start..].find('}') {
+                let samples_str = &self.content[search_start..search_start + end_idx];
+
+                // Parse "time: value" pairs
+                for part in samples_str.split(',') {
+                    let kv: Vec<&str> = part.split(':').collect();
+                    if kv.len() == 2 {
+                        if let (Ok(time), Ok(value)) = (
+                            kv[0].trim().parse::<f64>(),
+                            kv[1].trim().parse::<f64>(),
+                        ) {
+                            samples.push((time, value));
+                        }
+                    }
+                }
+            }
+        }
+
+        samples
+    }
+}
+
+/// USD Writer extension for digital twin output
+impl UsdWriter {
+    /// Write time-sampled attribute
+    pub fn attr_time_sampled(&mut self, attr_type: &str, name: &str, samples: &[(f64, f64)]) {
+        self.write_indent();
+        let _ = write!(self.content, "{} {}.timeSamples = {{ ", attr_type, name);
+        for (i, (time, value)) in samples.iter().enumerate() {
+            if i > 0 { self.content.push_str(", "); }
+            let _ = write!(self.content, "{}: {}", time, value);
+        }
+        self.content.push_str(" }\n");
+    }
+
+    /// Write sensor data as USD custom attribute
+    pub fn sensor_data(&mut self, sensor_id: &str, value: f64, time: f64) {
+        self.write_indent();
+        let _ = write!(self.content, "custom double sensor:{} = {}\n", sensor_id, value);
+        self.write_indent();
+        let _ = write!(self.content, "custom double sensor:{}:time = {}\n", sensor_id, time);
+    }
+
+    /// Write plasma diagnostics block
+    pub fn plasma_diagnostics(&mut self, diag: &PlasmaDiagnostics) {
+        self.begin_scope("PlasmaDiagnostics");
+
+        self.write_indent();
+        let _ = write!(self.content, "custom double time = {}\n", diag.time);
+
+        if let Some(ip) = diag.ip {
+            self.write_indent();
+            let _ = write!(self.content, "custom double plasma:current = {}\n", ip);
+        }
+        if let Some(te0) = diag.te0 {
+            self.write_indent();
+            let _ = write!(self.content, "custom double plasma:te0_keV = {}\n", te0);
+        }
+        if let Some(ti0) = diag.ti0 {
+            self.write_indent();
+            let _ = write!(self.content, "custom double plasma:ti0_keV = {}\n", ti0);
+        }
+        if let Some(ne0) = diag.ne0 {
+            self.write_indent();
+            let _ = write!(self.content, "custom double plasma:ne0_m3 = {:.3e}\n", ne0);
+        }
+        if let Some(beta_p) = diag.beta_p {
+            self.write_indent();
+            let _ = write!(self.content, "custom double plasma:beta_p = {}\n", beta_p);
+        }
+        if let Some(beta_t) = diag.beta_t {
+            self.write_indent();
+            let _ = write!(self.content, "custom double plasma:beta_t = {}\n", beta_t);
+        }
+        if let Some(q95) = diag.q95 {
+            self.write_indent();
+            let _ = write!(self.content, "custom double plasma:q95 = {}\n", q95);
+        }
+        if let Some(w_mhd) = diag.w_mhd {
+            self.write_indent();
+            let _ = write!(self.content, "custom double plasma:w_mhd = {:.3e}\n", w_mhd);
+        }
+        if let Some(r_geo) = diag.r_geo {
+            self.write_indent();
+            let _ = write!(self.content, "custom double plasma:r_geo = {}\n", r_geo);
+        }
+        if let Some(z_geo) = diag.z_geo {
+            self.write_indent();
+            let _ = write!(self.content, "custom double plasma:z_geo = {}\n", z_geo);
+        }
+
+        self.end_prim();
+    }
+
+    /// Write coil data
+    pub fn coil_data(&mut self, coil: &CoilData) {
+        self.begin_scope(&coil.name);
+
+        self.write_indent();
+        let _ = write!(self.content, "custom double {}:current = {}\n", coil.name, coil.current);
+        self.write_indent();
+        let _ = write!(self.content, "custom double {}:voltage = {}\n", coil.name, coil.voltage);
+        self.write_indent();
+        let _ = write!(self.content, "custom double {}:temperature = {}\n", coil.name, coil.temperature);
+        self.write_indent();
+        let _ = write!(self.content, "custom double {}:b_max = {}\n", coil.name, coil.b_max);
+
+        self.end_prim();
+    }
+
+    /// Write material state
+    pub fn material_state(&mut self, state: &MaterialState) {
+        self.begin_scope(&state.surface_id);
+
+        self.write_indent();
+        let _ = write!(self.content, "custom double {}:erosion_depth = {:.6e}\n", state.surface_id, state.erosion_depth);
+        self.write_indent();
+        let _ = write!(self.content, "custom double {}:deposition = {:.6e}\n", state.surface_id, state.deposition_thickness);
+        self.write_indent();
+        let _ = write!(self.content, "custom double {}:temperature = {}\n", state.surface_id, state.surface_temperature);
+        self.write_indent();
+        let _ = write!(self.content, "custom double {}:h_retention = {:.3e}\n", state.surface_id, state.h_retention);
+
+        self.end_prim();
+    }
+
+    /// Write complete digital twin state
+    pub fn digital_twin_state(&mut self, state: &DigitalTwinState) {
+        self.begin_scope("DigitalTwinState");
+
+        self.write_indent();
+        let _ = write!(self.content, "custom double time = {}\n", state.time);
+
+        // Plasma diagnostics
+        self.plasma_diagnostics(&state.plasma);
+
+        // TF Coils
+        self.begin_scope("TFCoils");
+        for coil in &state.tf_coils {
+            self.coil_data(coil);
+        }
+        self.end_prim();
+
+        // PF Coils
+        self.begin_scope("PFCoils");
+        for coil in &state.pf_coils {
+            self.coil_data(coil);
+        }
+        self.end_prim();
+
+        // First Wall
+        self.begin_scope("FirstWall");
+        for mat in &state.first_wall {
+            self.material_state(mat);
+        }
+        self.end_prim();
+
+        // Divertor
+        self.begin_scope("Divertor");
+        for mat in &state.divertor {
+            self.material_state(mat);
+        }
+        self.end_prim();
+
+        // Sensors
+        self.begin_scope("Sensors");
+        for sensor in &state.sensors {
+            self.sensor_data(&sensor.sensor_id, sensor.value, sensor.time);
+        }
+        self.end_prim();
+
+        self.end_prim();
+    }
+}
+
+/// Digital twin data exchange manager
+///
+/// Manages bidirectional data flow between tokasim-rs and external systems
+/// (NVIDIA Omniverse, real sensor data, control systems).
+pub struct DigitalTwinExchange {
+    /// Export directory for USD files
+    pub export_dir: String,
+    /// Import directory for incoming data
+    pub import_dir: String,
+    /// Current simulation time
+    pub current_time: f64,
+    /// History of imported states
+    pub state_history: Vec<DigitalTwinState>,
+    /// Maximum history length
+    pub max_history: usize,
+}
+
+impl DigitalTwinExchange {
+    /// Create new exchange manager
+    pub fn new(export_dir: &str, import_dir: &str) -> Self {
+        Self {
+            export_dir: export_dir.to_string(),
+            import_dir: import_dir.to_string(),
+            current_time: 0.0,
+            state_history: Vec::new(),
+            max_history: 1000,
+        }
+    }
+
+    /// Export simulation state to USD
+    pub fn export_state(&self, state: &DigitalTwinState) -> std::io::Result<String> {
+        let mut writer = UsdWriter::new();
+        writer.digital_twin_state(state);
+
+        let filename = format!("{}/state_{:.3}.usda", self.export_dir, state.time);
+        writer.write_to_file(&filename)?;
+
+        Ok(filename)
+    }
+
+    /// Import state from USD file
+    pub fn import_state(&mut self, filename: &str) -> Result<DigitalTwinState, String> {
+        let mut reader = UsdReader::from_file(filename)
+            .map_err(|e| format!("Failed to read file: {}", e))?;
+
+        let state = reader.parse_digital_twin_state()?;
+
+        // Add to history
+        self.state_history.push(state.clone());
+        if self.state_history.len() > self.max_history {
+            self.state_history.remove(0);
+        }
+
+        self.current_time = state.time;
+
+        Ok(state)
+    }
+
+    /// Get interpolated state at given time
+    pub fn interpolate_state(&self, time: f64) -> Option<DigitalTwinState> {
+        if self.state_history.is_empty() {
+            return None;
+        }
+
+        // Find bracketing states
+        let mut before: Option<&DigitalTwinState> = None;
+        let mut after: Option<&DigitalTwinState> = None;
+
+        for state in &self.state_history {
+            if state.time <= time {
+                before = Some(state);
+            }
+            if state.time >= time && after.is_none() {
+                after = Some(state);
+            }
+        }
+
+        match (before, after) {
+            (Some(b), Some(a)) if b.time != a.time => {
+                // Linear interpolation
+                let t = (time - b.time) / (a.time - b.time);
+                Some(Self::lerp_states(b, a, t))
+            }
+            (Some(state), _) | (_, Some(state)) => Some(state.clone()),
+            _ => None,
+        }
+    }
+
+    /// Linear interpolation between two states
+    fn lerp_states(a: &DigitalTwinState, b: &DigitalTwinState, t: f64) -> DigitalTwinState {
+        let lerp = |x: f64, y: f64| x + t * (y - x);
+        let lerp_opt = |x: Option<f64>, y: Option<f64>| {
+            match (x, y) {
+                (Some(xv), Some(yv)) => Some(lerp(xv, yv)),
+                (Some(xv), None) => Some(xv),
+                (None, Some(yv)) => Some(yv),
+                _ => None,
+            }
+        };
+
+        DigitalTwinState {
+            time: lerp(a.time, b.time),
+            plasma: PlasmaDiagnostics {
+                time: lerp(a.plasma.time, b.plasma.time),
+                ip: lerp_opt(a.plasma.ip, b.plasma.ip),
+                te0: lerp_opt(a.plasma.te0, b.plasma.te0),
+                ti0: lerp_opt(a.plasma.ti0, b.plasma.ti0),
+                ne0: lerp_opt(a.plasma.ne0, b.plasma.ne0),
+                beta_p: lerp_opt(a.plasma.beta_p, b.plasma.beta_p),
+                beta_t: lerp_opt(a.plasma.beta_t, b.plasma.beta_t),
+                li: lerp_opt(a.plasma.li, b.plasma.li),
+                q95: lerp_opt(a.plasma.q95, b.plasma.q95),
+                w_mhd: lerp_opt(a.plasma.w_mhd, b.plasma.w_mhd),
+                r_geo: lerp_opt(a.plasma.r_geo, b.plasma.r_geo),
+                z_geo: lerp_opt(a.plasma.z_geo, b.plasma.z_geo),
+            },
+            tf_coils: a.tf_coils.clone(),  // Use first state's structure
+            pf_coils: a.pf_coils.clone(),
+            cs_data: a.cs_data.clone(),
+            first_wall: a.first_wall.clone(),
+            divertor: a.divertor.clone(),
+            sensors: a.sensors.clone(),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -697,5 +1361,106 @@ mod tests {
         // Should have mesh data
         assert!(content.contains("points"));
         assert!(content.contains("faceVertexCounts"));
+    }
+
+    #[test]
+    fn test_digital_twin_state_roundtrip() {
+        // Create a state
+        let state = DigitalTwinState {
+            time: 1.5,
+            plasma: PlasmaDiagnostics {
+                time: 1.5,
+                ip: Some(15e6),
+                te0: Some(10.0),
+                ti0: Some(9.5),
+                ne0: Some(3e20),
+                beta_p: Some(1.2),
+                beta_t: Some(0.05),
+                li: Some(0.85),
+                q95: Some(3.2),
+                w_mhd: Some(5e6),
+                r_geo: Some(1.5),
+                z_geo: Some(0.02),
+            },
+            tf_coils: Vec::new(),
+            pf_coils: Vec::new(),
+            cs_data: None,
+            first_wall: Vec::new(),
+            divertor: Vec::new(),
+            sensors: vec![
+                SensorReading {
+                    time: 1.5,
+                    sensor_id: "temp_fw_001".to_string(),
+                    value: 850.0,
+                    uncertainty: None,
+                },
+            ],
+        };
+
+        // Write to USD
+        let mut writer = UsdWriter::new();
+        writer.digital_twin_state(&state);
+        let usd_content = writer.finish();
+
+        // Verify content
+        assert!(usd_content.contains("DigitalTwinState"));
+        assert!(usd_content.contains("plasma:current"));
+        assert!(usd_content.contains("plasma:te0_keV"));
+    }
+
+    #[test]
+    fn test_usd_reader_float_attribute() {
+        let content = r#"
+            custom double test_value = 42.5
+            custom float another = 3.14
+        "#.to_string();
+
+        let reader = UsdReader::from_string(content);
+
+        assert_eq!(reader.find_attribute_float("test_value"), Some(42.5));
+        assert_eq!(reader.find_attribute_float("another"), Some(3.14));
+        assert_eq!(reader.find_attribute_float("nonexistent"), None);
+    }
+
+    #[test]
+    fn test_plasma_diagnostics_default() {
+        let diag = PlasmaDiagnostics::default();
+        assert_eq!(diag.time, 0.0);
+        assert!(diag.ip.is_none());
+        assert!(diag.te0.is_none());
+    }
+
+    #[test]
+    fn test_digital_twin_exchange_interpolation() {
+        let mut exchange = DigitalTwinExchange::new("./export", "./import");
+
+        // Add two states
+        let state1 = DigitalTwinState {
+            time: 0.0,
+            plasma: PlasmaDiagnostics {
+                time: 0.0,
+                te0: Some(10.0),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        let state2 = DigitalTwinState {
+            time: 1.0,
+            plasma: PlasmaDiagnostics {
+                time: 1.0,
+                te0: Some(20.0),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        exchange.state_history.push(state1);
+        exchange.state_history.push(state2);
+
+        // Interpolate at t=0.5
+        let interp = exchange.interpolate_state(0.5).unwrap();
+        assert!((interp.time - 0.5).abs() < 1e-10);
+        assert!((interp.plasma.te0.unwrap() - 15.0).abs() < 1e-10);
     }
 }

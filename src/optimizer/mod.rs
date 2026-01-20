@@ -36,6 +36,7 @@ pub mod infrastructure;
 pub mod reports;
 pub mod design;
 pub mod utils;
+pub mod adjoint;
 
 // Re-exports principales
 pub use parameters::{ReactorParameterSpace, ParameterDef, MagnetType, WallMaterial, BlanketType};

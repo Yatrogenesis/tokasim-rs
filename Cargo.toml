@@ -12,17 +12,20 @@ categories = ["science", "simulation"]
 [dependencies]
 # Core math - keeping dependencies minimal
 # Phase 1: Zero external deps for core physics
-# Phase 2: Optional rayon for parallelization
+# Phase 2: Rayon for parallelization (enabled)
 
 # Required for optimizer NSGA-II
 rand = "0.8"
+
+# Parallelization for real-time performance
+rayon = "1.10"
 
 [dev-dependencies]
 # Testing only
 
 [features]
-default = []
-parallel = []    # Future: rayon parallelization
+default = ["parallel"]
+parallel = []    # Rayon parallelization enabled by default
 simd = []        # Future: SIMD optimizations
 yatronet = []    # Future: YatroNet distributed computing
 nl-control = []  # NL-SRE integration for natural language control

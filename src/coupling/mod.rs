@@ -36,7 +36,12 @@
 //! Francisco Molina-Burgos, Avermex Research Division
 //! January 2026
 
+pub mod jfnk;
+
 use crate::types::Vec3;
+
+// Re-export JFNK solver
+pub use jfnk::{JFNKSolver, JFNKConfig, CoupledStateVector};
 
 // ============================================================================
 // COUPLING ENUMS AND TRAITS

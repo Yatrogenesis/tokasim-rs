@@ -132,11 +132,11 @@ pub struct GradShafranovSolver {
     /// Magnetic axis Z position
     pub z_axis: f64,
     /// Relaxation parameter for SOR
-    omega: f64,
+    pub omega: f64,
     /// Maximum iterations
-    max_iter: usize,
+    pub max_iter: usize,
     /// Convergence tolerance
-    tolerance: f64,
+    pub tolerance: f64,
 }
 
 impl GradShafranovSolver {
@@ -278,7 +278,7 @@ impl GradShafranovSolver {
     }
 
     /// Check if point is inside plasma boundary
-    fn is_inside_plasma(&self, i: usize, j: usize) -> bool {
+    pub fn is_inside_plasma(&self, i: usize, j: usize) -> bool {
         let r = self.grid.r_at(i);
         let z = self.grid.z_at(j);
 

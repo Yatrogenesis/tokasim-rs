@@ -35,6 +35,8 @@
 //! Francisco Molina-Burgos, Avermex Research Division
 //! January 2026
 
+pub mod surface_sampling;
+
 use std::f64::consts::PI;
 
 // ============================================================================
