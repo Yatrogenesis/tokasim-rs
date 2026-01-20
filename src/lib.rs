@@ -53,6 +53,8 @@ pub mod cost;
 pub mod usd;
 pub mod neutronics;
 pub mod cfd;
+pub mod coupling;
+pub mod pwi;
 
 // Re-exports
 pub use constants::*;
