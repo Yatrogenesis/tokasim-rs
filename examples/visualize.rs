@@ -23,19 +23,15 @@ fn main() {
     let kappa = TS1_ELONGATION;
     let delta = TS1_TRIANGULARITY;
 
-    // Grupo: Criostato (capa externa)
+    // Grupo: Criostato (capa externa) - D-shape matching plasma geometry
     renderer.group_start(Some("cryostat"), None, None);
-    let cryo_r = r0 + a + 0.8;
-    let cryo_h = a * kappa + 0.8;
-    renderer.ellipse(r0, 0.0, cryo_r, cryo_h,
+    renderer.d_shape(r0, a + 0.8, kappa, delta,
         &Color::CRYOSTAT.to_hex(), "#888", 3.0);
     renderer.group_end();
 
-    // Grupo: Vacuum Vessel
+    // Grupo: Vacuum Vessel - D-shape matching plasma geometry
     renderer.group_start(Some("vacuum_vessel"), None, None);
-    let vv_r = r0 + a + 0.3;
-    let vv_h = a * kappa + 0.3;
-    renderer.ellipse(r0, 0.0, vv_r, vv_h,
+    renderer.d_shape(r0, a + 0.3, kappa, delta,
         &Color::VACUUM_VESSEL.to_hex(), "#555", 2.0);
     renderer.group_end();
 

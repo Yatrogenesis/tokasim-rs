@@ -20,6 +20,10 @@ rand = "0.8"
 # Parallelization for real-time performance
 rayon = "1.10"
 
+# Bevy 3D visualization (optional)
+bevy = { version = "0.14", optional = true }
+bevy_egui = { version = "0.29", optional = true }
+
 [dev-dependencies]
 # Testing only
 
@@ -29,6 +33,7 @@ parallel = []    # Rayon parallelization enabled by default
 simd = []        # Future: SIMD optimizations
 yatronet = []    # Future: YatroNet distributed computing
 nl-control = []  # NL-SRE integration for natural language control
+bevy-viz = ["bevy", "bevy_egui"]  # Bevy 3D real-time visualization
 
 [profile.release]
 opt-level = 3
@@ -42,6 +47,16 @@ opt-level = 1
 [[bin]]
 name = "tokasim"
 path = "src/main.rs"
+
+[[bin]]
+name = "tokasim-viz"
+path = "src/bin/tokasim_viz.rs"
+required-features = ["bevy-viz"]
+
+[[bin]]
+name = "tokasim-explorer"
+path = "src/bin/tokasim_explorer.rs"
+required-features = ["bevy-viz"]
 
 # Workspace members will be added in Phase 2
 # For now, monolithic structure for simplicity

@@ -19,12 +19,18 @@ pub mod fields;
 pub mod dashboard;
 pub mod animation;
 
+#[cfg(feature = "bevy-viz")]
+pub mod bevy;
+
 pub use renderer::*;
 pub use projections::project_to_2d;
 pub use components::*;
 pub use particles::{ParticleType, ParticleTrajectory, ParticleRenderer};
 pub use dashboard::{StatusIndicator, Dashboard};
 pub use animation::{AnimationConfig, AnimationGenerator, AnimationFrame};
+
+#[cfg(feature = "bevy-viz")]
+pub use bevy::{TokasimBridge, run_visualization};
 
 #[allow(unused_imports)]
 use crate::types::Vec3;
