@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -250 700 500" width="1400" height="1000">
+  <defs>
+    <!-- Gradientes -->
+    <radialGradient id="plasmaGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#ff6600;stop-opacity:1"/>
+      <stop offset="40%" style="stop-color:#ff3300;stop-opacity:0.9"/>
+      <stop offset="70%" style="stop-color:#cc0066;stop-opacity:0.7"/>
+      <stop offset="100%" style="stop-color:#660099;stop-opacity:0.5"/>
+    </radialGradient>
+
+    <linearGradient id="tfCoilGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#1a5276"/>
+      <stop offset="50%" style="stop-color:#2874a6"/>
+      <stop offset="100%" style="stop-color:#1a5276"/>
+    </linearGradient>
+
+    <linearGradient id="steelGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#7f8c8d"/>
+      <stop offset="50%" style="stop-color:#95a5a6"/>
+      <stop offset="100%" style="stop-color:#7f8c8d"/>
+    </linearGradient>
+
+    <linearGradient id="copperGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#b87333"/>
+      <stop offset="50%" style="stop-color:#cd7f32"/>
+      <stop offset="100%" style="stop-color:#b87333"/>
+    </linearGradient>
+
+    <!-- Filtro de brillo para plasma -->
+    <filter id="plasmaGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Patron de lineas para blanket -->
+    <pattern id="blanketPattern" patternUnits="userSpaceOnUse" width="8" height="8">
+      <rect width="8" height="8" fill="#2e7d32"/>
+      <line x1="0" y1="0" x2="8" y2="8" stroke="#1b5e20" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <!-- Fondo -->
+  <rect x="-50" y="-250" width="700" height="500" fill="#1a1a2e"/>
+
+  <!-- Titulo -->
+  <text x="300" y="-220" font-family="Arial, sans-serif" font-size="24" fill="#ffffff" text-anchor="middle" font-weight="bold">
+    TOKASIM TS-1 TOKAMAK - Seccion Poloidal
+  </text>
+  <text x="300" y="-195" font-family="Arial, sans-serif" font-size="14" fill="#aaaaaa" text-anchor="middle">
+    R₀ = 1.50 m | a = 0.60 m | B_t = 25 T | I_p = 12 MA | κ = 1.97 | δ = 0.54
+  </text>
+
+  <!-- Escala: 1m = 100px, origen en (150, 0) que es R=0 -->
+  <!-- R=0 esta en x=150, R=1.5m esta en x=300, R=3m esta en x=450 -->
+
+  <!-- Criostato (R=0 a R=3m, Z=-2 a +2m) -->
+  <rect x="150" y="-200" width="300" height="400" rx="20" ry="20"
+        fill="none" stroke="#5d6d7e" stroke-width="4"/>
+  <text x="460" y="-180" font-family="Arial" font-size="10" fill="#5d6d7e">Criostato</text>
+
+  <!-- Escudo Termico (80K) -->
+  <rect x="160" y="-190" width="280" height="380" rx="15" ry="15"
+        fill="none" stroke="#85929e" stroke-width="2" stroke-dasharray="10,5"/>
+
+  <!-- TF Coil (uno de 18) - forma D -->
+  <path d="M 180 -178
+           Q 180 -140, 200 -100
+           L 200 100
+           Q 180 140, 180 178
+           L 195 178
+           Q 210 140, 210 100
+           L 210 -100
+           Q 210 -140, 195 -178
+           Z"
+        fill="url(#tfCoilGradient)" stroke="#0d47a1" stroke-width="2"/>
+
+  <!-- TF Coil - parte externa -->
+  <path d="M 410 -178
+           Q 430 -140, 430 -100
+           L 430 100
+           Q 430 140, 410 178
+           L 395 178
+           Q 415 140, 415 100
+           L 415 -100
+           Q 415 -140, 395 -178
+           Z"
+        fill="url(#tfCoilGradient)" stroke="#0d47a1" stroke-width="2"/>
+
+  <!-- Conexion superior TF -->
+  <path d="M 195 -178 Q 300 -190, 395 -178 L 410 -163 Q 300 -175, 180 -163 Z"
+        fill="url(#tfCoilGradient)" stroke="#0d47a1" stroke-width="2"/>
+
+  <!-- Conexion inferior TF -->
+  <path d="M 195 178 Q 300 190, 395 178 L 410 163 Q 300 175, 180 163 Z"
+        fill="url(#tfCoilGradient)" stroke="#0d47a1" stroke-width="2"/>
+
+  <text x="175" y="0" font-family="Arial" font-size="9" fill="#ffffff"
+        transform="rotate(-90, 175, 0)">TF Coil (HTS REBCO)</text>
+
+  <!-- Central Solenoid (R=0.15-0.35m, Z=-1.4 a +1.4m) -->
+  <rect x="165" y="-140" width="20" height="280" rx="3" ry="3"
+        fill="url(#copperGradient)" stroke="#8b4513" stroke-width="2"/>
+  <text x="175" y="155" font-family="Arial" font-size="8" fill="#cd7f32" text-anchor="middle">CS</text>
+
+  <!-- PF Coils -->
+  <!-- PF1: R=0.4m, Z=+1.5m -->
+  <rect x="185" y="-155" width="15" height="10" rx="2" ry="2"
+        fill="#8e44ad" stroke="#6c3483" stroke-width="1"/>
+  <text x="208" y="-148" font-family="Arial" font-size="7" fill="#8e44ad">PF1</text>
+
+  <!-- PF2: R=0.4m, Z=-1.5m -->
+  <rect x="185" y="145" width="15" height="10" rx="2" ry="2"
+        fill="#8e44ad" stroke="#6c3483" stroke-width="1"/>
+  <text x="208" y="152" font-family="Arial" font-size="7" fill="#8e44ad">PF2</text>
+
+  <!-- PF3: R=2.2m, Z=+1.2m -->
+  <rect x="360" y="-126" width="20" height="12" rx="2" ry="2"
+        fill="#8e44ad" stroke="#6c3483" stroke-width="1"/>
+  <text x="385" y="-118" font-family="Arial" font-size="7" fill="#8e44ad">PF3</text>
+
+  <!-- PF4: R=2.2m, Z=-1.2m -->
+  <rect x="360" y="114" width="20" height="12" rx="2" ry="2"
+        fill="#8e44ad" stroke="#6c3483" stroke-width="1"/>
+  <text x="385" y="122" font-family="Arial" font-size="7" fill="#8e44ad">PF4</text>
+
+  <!-- PF5: R=2.5m, Z=+0.5m -->
+  <rect x="390" y="-55" width="15" height="10" rx="2" ry="2"
+        fill="#8e44ad" stroke="#6c3483" stroke-width="1"/>
+  <text x="410" y="-48" font-family="Arial" font-size="7" fill="#8e44ad">PF5</text>
+
+  <!-- PF6: R=2.5m, Z=-0.5m -->
+  <rect x="390" y="45" width="15" height="10" rx="2" ry="2"
+        fill="#8e44ad" stroke="#6c3483" stroke-width="1"/>
+  <text x="410" y="52" font-family="Arial" font-size="7" fill="#8e44ad">PF6</text>
+
+  <!-- Vacuum Vessel (D-shape, a+0.15m desde R0) -->
+  <path d="M 225 0
+           Q 225 -85, 245 -125
+           Q 280 -145, 320 -145
+           Q 360 -145, 385 -125
+           Q 405 -85, 405 0
+           Q 405 85, 385 125
+           Q 360 145, 320 145
+           Q 280 145, 245 125
+           Q 225 85, 225 0
+           Z"
+        fill="none" stroke="url(#steelGradient)" stroke-width="8"/>
+  <text x="230" y="-135" font-family="Arial" font-size="8" fill="#95a5a6">Vacuum Vessel (316LN)</text>
+
+  <!-- Blanket / First Wall -->
+  <path d="M 240 0
+           Q 240 -75, 255 -110
+           Q 285 -128, 315 -128
+           Q 345 -128, 370 -110
+           Q 385 -75, 385 0
+           Q 385 75, 370 110
+           Q 345 128, 315 128
+           Q 285 128, 255 110
+           Q 240 75, 240 0
+           Z"
+        fill="url(#blanketPattern)" stroke="#1b5e20" stroke-width="3"/>
+
+  <!-- First Wall (Tungsten) -->
+  <path d="M 250 0
+           Q 250 -68, 263 -100
+           Q 290 -118, 315 -118
+           Q 340 -118, 362 -100
+           Q 375 -68, 375 0
+           Q 375 68, 362 100
+           Q 340 118, 315 118
+           Q 290 118, 263 100
+           Q 250 68, 250 0
+           Z"
+        fill="none" stroke="#78909c" stroke-width="4"/>
+  <text x="253" y="-105" font-family="Arial" font-size="7" fill="#78909c">W First Wall</text>
+
+  <!-- Plasma Edge (rho = 1.0) -->
+  <path d="M 255 0
+           Q 255 -63, 268 -93
+           Q 292 -110, 315 -110
+           Q 338 -110, 357 -93
+           Q 370 -63, 370 0
+           Q 370 63, 357 93
+           Q 338 110, 315 110
+           Q 292 110, 268 93
+           Q 255 63, 255 0
+           Z"
+        fill="#660099" fill-opacity="0.3" stroke="#9933cc" stroke-width="2"/>
+
+  <!-- Plasma Core -->
+  <ellipse cx="315" cy="0" rx="45" ry="88"
+           fill="url(#plasmaGradient)" filter="url(#plasmaGlow)"/>
+
+  <!-- Eje magnetico (centro del plasma) -->
+  <circle cx="315" cy="0" r="3" fill="#ffffff"/>
+  <text x="320" y="-5" font-family="Arial" font-size="7" fill="#ffffff">R₀</text>
+
+  <!-- Divertor Interior -->
+  <path d="M 248 95 L 265 115 L 280 115 L 265 95 Z"
+        fill="#455a64" stroke="#263238" stroke-width="2"/>
+
+  <!-- Divertor Exterior -->
+  <path d="M 350 95 L 365 115 L 385 115 L 370 95 Z"
+        fill="#455a64" stroke="#263238" stroke-width="2"/>
+
+  <!-- X-point marker -->
+  <circle cx="290" cy="105" r="4" fill="none" stroke="#ff0000" stroke-width="2"/>
+  <line x1="286" y1="105" x2="294" y2="105" stroke="#ff0000" stroke-width="1.5"/>
+  <line x1="290" y1="101" x2="290" y2="109" stroke="#ff0000" stroke-width="1.5"/>
+  <text x="295" y="112" font-family="Arial" font-size="7" fill="#ff0000">X-point</text>
+
+  <!-- Escala -->
+  <line x1="480" y="170" x2="580" y2="170" stroke="#ffffff" stroke-width="2"/>
+  <line x1="480" y="165" x2="480" y2="175" stroke="#ffffff" stroke-width="2"/>
+  <line x1="580" y="165" x2="580" y2="175" stroke="#ffffff" stroke-width="2"/>
+  <text x="530" y="185" font-family="Arial" font-size="12" fill="#ffffff" text-anchor="middle">1.0 m</text>
+
+  <!-- Ejes de coordenadas -->
+  <line x1="50" y1="0" x2="130" y2="0" stroke="#ffffff" stroke-width="1" marker-end="url(#arrowhead)"/>
+  <line x1="50" y1="50" x2="50" y2="-30" stroke="#ffffff" stroke-width="1"/>
+  <text x="135" y="5" font-family="Arial" font-size="10" fill="#ffffff">R</text>
+  <text x="55" y="-35" font-family="Arial" font-size="10" fill="#ffffff">Z</text>
+  <text x="45" y="65" font-family="Arial" font-size="8" fill="#888888">R=0</text>
+
+  <!-- Marcadores de R -->
+  <line x1="150" y1="195" x2="150" y2="205" stroke="#666666" stroke-width="1"/>
+  <text x="150" y="218" font-family="Arial" font-size="8" fill="#666666" text-anchor="middle">0</text>
+
+  <line x1="250" y1="195" x2="250" y2="205" stroke="#666666" stroke-width="1"/>
+  <text x="250" y="218" font-family="Arial" font-size="8" fill="#666666" text-anchor="middle">1.0m</text>
+
+  <line x1="300" y1="195" x2="300" y2="205" stroke="#666666" stroke-width="1"/>
+  <text x="300" y="218" font-family="Arial" font-size="8" fill="#666666" text-anchor="middle">1.5m</text>
+
+  <line x1="350" y1="195" x2="350" y2="205" stroke="#666666" stroke-width="1"/>
+  <text x="350" y="218" font-family="Arial" font-size="8" fill="#666666" text-anchor="middle">2.0m</text>
+
+  <line x1="400" y1="195" x2="400" y2="205" stroke="#666666" stroke-width="1"/>
+  <text x="400" y="218" font-family="Arial" font-size="8" fill="#666666" text-anchor="middle">2.5m</text>
+
+  <line x1="450" y1="195" x2="450" y2="205" stroke="#666666" stroke-width="1"/>
+  <text x="450" y="218" font-family="Arial" font-size="8" fill="#666666" text-anchor="middle">3.0m</text>
+
+  <!-- Leyenda -->
+  <rect x="500" y="-170" width="140" height="195" rx="5" ry="5"
+        fill="#2d2d44" stroke="#444466" stroke-width="1"/>
+  <text x="570" y="-150" font-family="Arial" font-size="11" fill="#ffffff" text-anchor="middle" font-weight="bold">LEYENDA</text>
+
+  <!-- Items de leyenda -->
+  <rect x="510" y="-135" width="20" height="12" fill="url(#plasmaGradient)"/>
+  <text x="535" y="-126" font-family="Arial" font-size="9" fill="#ffffff">Plasma (15 keV)</text>
+
+  <rect x="510" y="-115" width="20" height="12" fill="url(#tfCoilGradient)"/>
+  <text x="535" y="-106" font-family="Arial" font-size="9" fill="#ffffff">TF Coil (25T)</text>
+
+  <rect x="510" y="-95" width="20" height="12" fill="#8e44ad"/>
+  <text x="535" y="-86" font-family="Arial" font-size="9" fill="#ffffff">PF Coils</text>
+
+  <rect x="510" y="-75" width="20" height="12" fill="url(#copperGradient)"/>
+  <text x="535" y="-66" font-family="Arial" font-size="9" fill="#ffffff">Central Solenoid</text>
+
+  <rect x="510" y="-55" width="20" height="12" fill="none" stroke="#95a5a6" stroke-width="3"/>
+  <text x="535" y="-46" font-family="Arial" font-size="9" fill="#ffffff">Vacuum Vessel</text>
+
+  <rect x="510" y="-35" width="20" height="12" fill="url(#blanketPattern)"/>
+  <text x="535" y="-26" font-family="Arial" font-size="9" fill="#ffffff">Blanket (WCLL)</text>
+
+  <rect x="510" y="-15" width="20" height="12" fill="none" stroke="#78909c" stroke-width="2"/>
+  <text x="535" y="-6" font-family="Arial" font-size="9" fill="#ffffff">First Wall (W)</text>
+
+  <rect x="510" y="5" width="20" height="12" fill="#455a64"/>
+  <text x="535" y="14" font-family="Arial" font-size="9" fill="#ffffff">Divertor</text>
+
+  <!-- Especificaciones -->
+  <rect x="500" y="35" width="140" height="130" rx="5" ry="5"
+        fill="#2d2d44" stroke="#444466" stroke-width="1"/>
+  <text x="570" y="52" font-family="Arial" font-size="10" fill="#ffffff" text-anchor="middle" font-weight="bold">ESPECIFICACIONES</text>
+
+  <text x="510" y="68" font-family="Arial" font-size="8" fill="#aaaaaa">R₀ = 1.500 m</text>
+  <text x="510" y="80" font-family="Arial" font-size="8" fill="#aaaaaa">a = 0.600 m</text>
+  <text x="510" y="92" font-family="Arial" font-size="8" fill="#aaaaaa">κ = 1.97</text>
+  <text x="510" y="104" font-family="Arial" font-size="8" fill="#aaaaaa">δ = 0.54</text>
+  <text x="510" y="116" font-family="Arial" font-size="8" fill="#aaaaaa">B_t = 25.0 T</text>
+  <text x="510" y="128" font-family="Arial" font-size="8" fill="#aaaaaa">I_p = 12.0 MA</text>
+  <text x="510" y="140" font-family="Arial" font-size="8" fill="#aaaaaa">P_fusion = 500 MW</text>
+  <text x="510" y="152" font-family="Arial" font-size="8" fill="#aaaaaa">Q = 10</text>
+
+  <!-- Firma -->
+  <text x="300" y="235" font-family="Arial" font-size="10" fill="#666666" text-anchor="middle">
+    TOKASIM-RS | Francisco Molina-Burgos | Avermex Research Division | Enero 2026
+  </text>
+</svg>
