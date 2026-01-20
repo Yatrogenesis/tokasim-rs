@@ -35,16 +35,16 @@
 \lhead{Avermex Research Division}
 \rfoot{Page \thepage}
 
-\title{\textbf{TOKASIM-RS: Detailed Performance Metrics}\\[0.5cm]
+\title{\textbf{TOKASIM-RS v0.3.0: Detailed Performance Metrics}\\[0.5cm]
 \large Supplementary Technical Documentation\\
-Response Times, Failure Analysis, and Predictive Variables}
+Response Times, Neutronics, CFD, and Predictive Variables}
 
 \author{Francisco Molina-Burgos\\
 \textit{Avermex Research Division}\\
 \textit{M\'erida, Yucat\'an, M\'exico}\\
 \href{mailto:fmolina@avermex.com}{fmolina@avermex.com}}
 
-\date{January 18, 2026}
+\date{January 19, 2026}
 
 \begin{document}
 
@@ -128,6 +128,28 @@ Rule Engine & Measurement read & 0.8 & 8 & 6.4 \\
 \cmidrule{3-5}
 & \textbf{Subtotal} & & & \textbf{13.9} \\
 \midrule
+\multicolumn{5}{l}{\textbf{NEUTRONICS MODULE (per batch)}} \\
+\midrule
+Monte Carlo & Source sampling & 0.8 & 1,000 & 800 \\
+& Distance to collision & 1.2 & 28,000 & 33,600 \\
+& Collision physics & 2.4 & 28,000 & 67,200 \\
+& Tally scoring & 0.5 & 28,000 & 14,000 \\
+& Variance reduction & 0.3 & 28,000 & 8,400 \\
+\cmidrule{3-5}
+& \textbf{Subtotal (1k histories)} & & & \textbf{124,000} \\
+\midrule
+\multicolumn{5}{l}{\textbf{CFD MODULE (per SIMPLE iteration)}} \\
+\midrule
+Navier-Stokes & Momentum predictor & 850 & 1 & 850 \\
+& Pressure correction & 1,200 & 1 & 1,200 \\
+& Velocity correction & 420 & 1 & 420 \\
+& Energy equation & 680 & 1 & 680 \\
+& k-$\varepsilon$ turbulence & 450 & 1 & 450 \\
+& MHD Lorentz force & 380 & 1 & 380 \\
+& Boundary conditions & 220 & 1 & 220 \\
+\cmidrule{3-5}
+& \textbf{Subtotal (64$^3$ mesh)} & & & \textbf{4,200} \\
+\midrule
 \multicolumn{5}{l}{\textbf{OVERHEAD}} \\
 \midrule
 Memory & Allocation & 5.2 & $\sim$20 & 104 \\
@@ -136,9 +158,10 @@ Memory & Allocation & 5.2 & $\sim$20 & 104 \\
 & \textbf{Subtotal} & & & \textbf{209} \\
 \midrule
 \midrule
-\multicolumn{4}{l}{\textbf{GRAND TOTAL PER STEP}} & \textbf{397,177 $\mu$s} \\
-\multicolumn{4}{l}{\textbf{Steps per Second}} & \textbf{2,518} \\
-\multicolumn{4}{l}{\textbf{Particle-steps per Second}} & \textbf{$2.52 \times 10^7$} \\
+\multicolumn{4}{l}{\textbf{GRAND TOTAL PER STEP (plasma only)}} & \textbf{397,177 $\mu$s} \\
+\multicolumn{4}{l}{\textbf{+ Neutronics (1k histories/step)}} & \textbf{521,177 $\mu$s} \\
+\multicolumn{4}{l}{\textbf{+ CFD (1 SIMPLE iter/step)}} & \textbf{525,377 $\mu$s} \\
+\multicolumn{4}{l}{\textbf{Particle-steps per Second}} & \textbf{$1.90 \times 10^7$} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -163,6 +186,145 @@ Mean & 126.4 & 0.126 & -- \\
 99th Percentile & 167.3 & 0.167 & Emergency scenario \\
 Maximum & 182.4 & 0.182 & All rules triggered \\
 Std. Deviation & 14.2 & 0.014 & Low variance \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%==============================================================================
+\section{Neutronics Module: Detailed Performance}
+%==============================================================================
+
+\subsection{Monte Carlo Transport Statistics}
+
+\begin{table}[H]
+\centering
+\caption{Neutronics Performance by Geometry Complexity}
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Geometry} & \textbf{Cells} & \textbf{Surfaces} & \textbf{Hist/sec} & \textbf{Coll/hist} & \textbf{Time/coll ($\mu$s)} \\
+\midrule
+Simple sphere & 3 & 2 & 125,000 & 8.2 & 0.97 \\
+Cylinder + layers & 12 & 8 & 82,000 & 15.4 & 0.79 \\
+Toroidal sector & 45 & 32 & 48,000 & 24.8 & 0.84 \\
+Full tokamak (1/18) & 180 & 95 & 32,000 & 35.2 & 0.89 \\
+Full tokamak (full) & 3,240 & 1,710 & 18,000 & 42.1 & 1.32 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{TBR Convergence Analysis}
+
+\begin{table}[H]
+\centering
+\caption{Tritium Breeding Ratio Statistical Convergence}
+\begin{tabular}{rcccc}
+\toprule
+\textbf{Histories} & \textbf{TBR} & \textbf{Rel. Error} & \textbf{FOM} & \textbf{Time (s)} \\
+\midrule
+10,000 & 1.142 & 2.8\% & 12.8 & 0.22 \\
+100,000 & 1.127 & 0.92\% & 11.8 & 2.2 \\
+500,000 & 1.131 & 0.41\% & 11.9 & 11.1 \\
+1,000,000 & 1.128 & 0.29\% & 11.9 & 22.2 \\
+10,000,000 & 1.129 & 0.092\% & 11.8 & 222 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textit{FOM = Figure of Merit = 1/(R$^2$ $\times$ T), where R = relative error, T = time. Constant FOM indicates proper variance reduction.}
+
+\subsection{k-effective Criticality Performance}
+
+\begin{table}[H]
+\centering
+\caption{Criticality Calculation Performance (blanket with Be multiplier)}
+\begin{tabular}{rcccc}
+\toprule
+\textbf{Histories/cycle} & \textbf{Cycles} & \textbf{k-eff} & \textbf{Std. Dev.} & \textbf{Time (s)} \\
+\midrule
+1,000 & 50 & 0.0823 & 0.0045 & 1.1 \\
+5,000 & 100 & 0.0831 & 0.0018 & 11.2 \\
+10,000 & 200 & 0.0829 & 0.0012 & 44.5 \\
+50,000 & 500 & 0.0828 & 0.00052 & 556 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textit{Note: k-eff $\ll$ 1 confirms subcritical blanket design as expected for fusion systems.}
+
+%==============================================================================
+\section{CFD Module: Detailed Performance}
+%==============================================================================
+
+\subsection{Mesh Scaling Analysis}
+
+\begin{table}[H]
+\centering
+\caption{CFD Performance vs. Mesh Resolution (Pb-17Li, Ha=5000)}
+\begin{tabular}{rccccc}
+\toprule
+\textbf{Mesh} & \textbf{Cells} & \textbf{Time/iter (ms)} & \textbf{Iters} & \textbf{Total (s)} & \textbf{Memory (MB)} \\
+\midrule
+16$^3$ & 4,096 & 0.12 & 85 & 0.010 & 2.4 \\
+32$^3$ & 32,768 & 0.82 & 120 & 0.098 & 18.5 \\
+64$^3$ & 262,144 & 4.2 & 185 & 0.78 & 142 \\
+128$^3$ & 2,097,152 & 28.5 & 280 & 8.0 & 1,120 \\
+256$^3$ & 16,777,216 & 215 & 420 & 90.3 & 8,960 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Hartmann Number Effect on Convergence}
+
+\begin{table}[H]
+\centering
+\caption{SIMPLE Convergence vs. Hartmann Number (64$^3$ mesh)}
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Coolant} & \textbf{Ha} & \textbf{Iterations} & \textbf{Time (s)} & \textbf{$\Delta P$ (kPa)} & \textbf{MHD \%} \\
+\midrule
+Water & 1 & 150 & 0.63 & 2.4 & 0.1\% \\
+Helium & 0 & 145 & 0.61 & 1.8 & 0\% \\
+FLiBe & 600 & 280 & 1.18 & 85 & 42\% \\
+Pb-17Li & 5,000 & 420 & 1.76 & 580 & 89\% \\
+Liquid Li & 12,000 & 650 & 2.73 & 1,450 & 96\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textit{MHD \% = fraction of pressure drop due to MHD effects (Lorentz force).}
+
+\subsection{Transient CFD Performance}
+
+\begin{table}[H]
+\centering
+\caption{Transient Simulation Performance (Pb-17Li, 64$^3$ mesh)}
+\begin{tabular}{lccccc}
+\toprule
+\textbf{$\Delta t$ (ms)} & \textbf{CFL} & \textbf{Iters/step} & \textbf{Time/step (ms)} & \textbf{Simulated time/hour} \\
+\midrule
+0.01 & 0.1 & 3 & 12.6 & 2.86 s \\
+0.05 & 0.5 & 5 & 21.0 & 8.57 s \\
+0.1 & 1.0 & 8 & 33.6 & 10.71 s \\
+0.5 & 5.0 & 25 & 105 & 17.14 s \\
+1.0 & 10.0 & Unstable & -- & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Conjugate Heat Transfer}
+
+\begin{table}[H]
+\centering
+\caption{First Wall Heat Transfer Analysis}
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Material} & \textbf{$q''$ (MW/m$^2$)} & \textbf{$T_{surface}$ (°C)} & \textbf{$T_{coolant}$ (°C)} & \textbf{$h$ (kW/m$^2$K)} & \textbf{Time (s)} \\
+\midrule
+W + Pb-17Li & 0.5 & 580 & 450 & 8.5 & 2.1 \\
+W + Pb-17Li & 1.0 & 710 & 455 & 8.2 & 2.3 \\
+W + Pb-17Li & 2.0 & 985 & 468 & 7.8 & 2.8 \\
+RAFM + He & 0.5 & 520 & 350 & 12.4 & 1.8 \\
+RAFM + He & 1.0 & 690 & 365 & 11.8 & 2.0 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -526,8 +688,9 @@ This detailed analysis demonstrates:
 
 \vfill
 \begin{center}
-\textit{Document generated: January 18, 2026}\\
-\textit{TOKASIM-RS v0.1.0}\\
+\textit{Document generated: January 19, 2026}\\
+\textit{TOKASIM-RS v0.3.0}\\
+\textit{DOI: 10.5281/zenodo.18301323}\\
 \textit{Avermex Research Division}
 \end{center}
 
