@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
+  <defs>
+    <!-- Gradientes para efecto 3D -->
+    <linearGradient id="plasmaGrad3D" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff9900;stop-opacity:1"/>
+      <stop offset="30%" style="stop-color:#ff6600;stop-opacity:0.9"/>
+      <stop offset="60%" style="stop-color:#ff3366;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#9933ff;stop-opacity:0.6"/>
+    </linearGradient>
+
+    <linearGradient id="tfCoil3D" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4a90d9"/>
+      <stop offset="50%" style="stop-color:#2c5aa0"/>
+      <stop offset="100%" style="stop-color:#1a3a6e"/>
+    </linearGradient>
+
+    <linearGradient id="tfCoilDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2c5aa0"/>
+      <stop offset="100%" style="stop-color:#0d1f3c"/>
+    </linearGradient>
+
+    <linearGradient id="vesselGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#a0a0a0"/>
+      <stop offset="50%" style="stop-color:#707070"/>
+      <stop offset="100%" style="stop-color:#404040"/>
+    </linearGradient>
+
+    <linearGradient id="cryostatGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#606080"/>
+      <stop offset="100%" style="stop-color:#303050"/>
+    </linearGradient>
+
+    <linearGradient id="blanketGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4a7c4a"/>
+      <stop offset="100%" style="stop-color:#2d4d2d"/>
+    </linearGradient>
+
+    <linearGradient id="csGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#cd8032"/>
+      <stop offset="50%" style="stop-color:#b87333"/>
+      <stop offset="100%" style="stop-color:#8b5a2b"/>
+    </linearGradient>
+
+    <linearGradient id="supportGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#555555"/>
+      <stop offset="100%" style="stop-color:#222222"/>
+    </linearGradient>
+
+    <!-- Filtros -->
+    <filter id="glow3D" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="5" dy="5" stdDeviation="3" flood-opacity="0.5"/>
+    </filter>
+
+    <!-- Clip path para corte -->
+    <clipPath id="cutawayClip">
+      <path d="M 600 100 L 1200 100 L 1200 800 L 600 800 L 600 450 L 400 450 L 400 100 Z"/>
+    </clipPath>
+  </defs>
+
+  <!-- Fondo -->
+  <rect width="1200" height="900" fill="#0a0a1a"/>
+
+  <!-- Grid de fondo -->
+  <g opacity="0.1">
+    <line x1="0" y1="450" x2="1200" y2="450" stroke="#ffffff" stroke-width="1"/>
+    <line x1="600" y1="0" x2="600" y2="900" stroke="#ffffff" stroke-width="1"/>
+  </g>
+
+  <!-- Titulo -->
+  <text x="600" y="45" font-family="Arial, sans-serif" font-size="32" fill="#ffffff" text-anchor="middle" font-weight="bold">
+    TOKASIM TS-1 TOKAMAK - Vista 3D Isometrica
+  </text>
+  <text x="600" y="75" font-family="Arial, sans-serif" font-size="16" fill="#888888" text-anchor="middle">
+    R₀ = 1.50 m | a = 0.60 m | B_t = 25 T | 18 TF Coils | HTS REBCO Technology
+  </text>
+
+  <!-- ================ VISTA 3D PRINCIPAL ================ -->
+  <g transform="translate(600, 480)">
+
+    <!-- Sombra en el suelo -->
+    <ellipse cx="0" cy="180" rx="320" ry="80" fill="#000000" opacity="0.4"/>
+
+    <!-- Soporte de gravedad (base) -->
+    <path d="M -280 140 L -250 180 L 250 180 L 280 140 L 280 120 L -280 120 Z"
+          fill="url(#supportGrad)" stroke="#333333" stroke-width="2"/>
+    <path d="M -250 180 L -250 200 L 250 200 L 250 180 Z"
+          fill="#1a1a1a" stroke="#333333" stroke-width="1"/>
+
+    <!-- Piernas de soporte -->
+    <path d="M -200 120 L -220 180 L -180 180 L -160 120 Z" fill="url(#supportGrad)"/>
+    <path d="M 160 120 L 180 180 L 220 180 L 200 120 Z" fill="url(#supportGrad)"/>
+    <path d="M -40 120 L -50 180 L 50 180 L 40 120 Z" fill="url(#supportGrad)"/>
+
+    <!-- ======= CRYOSTAT (envolvente exterior) ======= -->
+    <!-- Parte trasera del criostato (elipse) -->
+    <ellipse cx="0" cy="0" rx="300" ry="75" fill="none" stroke="#404060" stroke-width="3" opacity="0.5"
+             stroke-dasharray="10,5"/>
+
+    <!-- Cilindro del criostato - parte trasera -->
+    <path d="M -300 -120 L -300 120 A 300 75 0 0 0 300 120 L 300 -120"
+          fill="url(#cryostatGrad)" opacity="0.3" stroke="#505070" stroke-width="2"/>
+
+    <!-- ======= TF COILS (18 bobinas) - parte trasera ======= -->
+    <!-- Bobinas traseras (9 bobinas, angulos 180-360) -->
+    <g opacity="0.6">
+      <!-- TF Coil 10 (200°) -->
+      <ellipse cx="-255" cy="0" rx="15" ry="100" fill="url(#tfCoilDark)" stroke="#1a3a6e" stroke-width="2"
+               transform="rotate(-20, -255, 0)"/>
+
+      <!-- TF Coil 11 (220°) -->
+      <ellipse cx="-230" cy="25" rx="15" ry="100" fill="url(#tfCoilDark)" stroke="#1a3a6e" stroke-width="2"
+               transform="rotate(-10, -230, 25)"/>
+
+      <!-- TF Coil 12 (240°) -->
+      <ellipse cx="-190" cy="45" rx="15" ry="100" fill="url(#tfCoilDark)" stroke="#1a3a6e" stroke-width="2"
+               transform="rotate(0, -190, 45)"/>
+
+      <!-- TF Coil 13 (260°) -->
+      <ellipse cx="-130" cy="58" rx="15" ry="100" fill="url(#tfCoilDark)" stroke="#1a3a6e" stroke-width="2"
+               transform="rotate(5, -130, 58)"/>
+
+      <!-- TF Coil 14 (280°) -->
+      <ellipse cx="-60" cy="65" rx="15" ry="100" fill="url(#tfCoilDark)" stroke="#1a3a6e" stroke-width="2"
+               transform="rotate(8, -60, 65)"/>
+
+      <!-- TF Coil 15 (300°) -->
+      <ellipse cx="20" cy="68" rx="15" ry="100" fill="url(#tfCoilDark)" stroke="#1a3a6e" stroke-width="2"
+               transform="rotate(10, 20, 68)"/>
+
+      <!-- TF Coil 16 (320°) -->
+      <ellipse cx="100" cy="62" rx="15" ry="100" fill="url(#tfCoilDark)" stroke="#1a3a6e" stroke-width="2"
+               transform="rotate(8, 100, 62)"/>
+
+      <!-- TF Coil 17 (340°) -->
+      <ellipse cx="170" cy="50" rx="15" ry="100" fill="url(#tfCoilDark)" stroke="#1a3a6e" stroke-width="2"
+               transform="rotate(3, 170, 50)"/>
+
+      <!-- TF Coil 18 (360°/0°) -->
+      <ellipse cx="220" cy="32" rx="15" ry="100" fill="url(#tfCoilDark)" stroke="#1a3a6e" stroke-width="2"
+               transform="rotate(-5, 220, 32)"/>
+    </g>
+
+    <!-- ======= VACUUM VESSEL - Toro (parte trasera visible) ======= -->
+    <!-- Superficie externa del toro -->
+    <ellipse cx="0" cy="0" rx="240" ry="60" fill="none" stroke="url(#vesselGrad)" stroke-width="8" opacity="0.5"/>
+
+    <!-- ======= BLANKET (manto interno) ======= -->
+    <ellipse cx="0" cy="0" rx="210" ry="52" fill="none" stroke="url(#blanketGrad)" stroke-width="12" opacity="0.4"/>
+
+    <!-- ======= PLASMA TOROIDAL ======= -->
+    <!-- Plasma - anillo toroidal con efecto de brillo -->
+    <ellipse cx="0" cy="0" rx="165" ry="41" fill="none" stroke="url(#plasmaGrad3D)" stroke-width="45"
+             filter="url(#glow3D)" opacity="0.8"/>
+
+    <!-- Nucleo caliente del plasma -->
+    <ellipse cx="0" cy="0" rx="165" ry="41" fill="none" stroke="#ffcc00" stroke-width="15"
+             filter="url(#glow3D)" opacity="0.6"/>
+
+    <!-- ======= CENTRAL SOLENOID ======= -->
+    <ellipse cx="0" cy="0" rx="35" ry="9" fill="#8b5a2b" stroke="#5a3a1b" stroke-width="1"/>
+    <rect x="-35" y="-110" width="70" height="110" fill="url(#csGrad)" stroke="#8b5a2b" stroke-width="2"/>
+    <ellipse cx="0" cy="-110" rx="35" ry="9" fill="#cd8032" stroke="#8b5a2b" stroke-width="2"/>
+
+    <!-- ======= TF COILS - parte frontal (9 bobinas) ======= -->
+    <!-- TF Coil 1 (20°) -->
+    <ellipse cx="255" cy="-15" rx="18" ry="105" fill="url(#tfCoil3D)" stroke="#4a90d9" stroke-width="2"
+             transform="rotate(15, 255, -15)" filter="url(#shadow)"/>
+
+    <!-- TF Coil 2 (40°) -->
+    <ellipse cx="230" cy="-35" rx="18" ry="105" fill="url(#tfCoil3D)" stroke="#4a90d9" stroke-width="2"
+             transform="rotate(8, 230, -35)" filter="url(#shadow)"/>
+
+    <!-- TF Coil 3 (60°) -->
+    <ellipse cx="185" cy="-50" rx="18" ry="105" fill="url(#tfCoil3D)" stroke="#4a90d9" stroke-width="2"
+             transform="rotate(0, 185, -50)" filter="url(#shadow)"/>
+
+    <!-- TF Coil 4 (80°) -->
+    <ellipse cx="125" cy="-60" rx="18" ry="105" fill="url(#tfCoil3D)" stroke="#4a90d9" stroke-width="2"
+             transform="rotate(-5, 125, -60)" filter="url(#shadow)"/>
+
+    <!-- TF Coil 5 (100°) -->
+    <ellipse cx="55" cy="-65" rx="18" ry="105" fill="url(#tfCoil3D)" stroke="#4a90d9" stroke-width="2"
+             transform="rotate(-8, 55, -65)" filter="url(#shadow)"/>
+
+    <!-- TF Coil 6 (120°) -->
+    <ellipse cx="-20" cy="-65" rx="18" ry="105" fill="url(#tfCoil3D)" stroke="#4a90d9" stroke-width="2"
+             transform="rotate(-10, -20, -65)" filter="url(#shadow)"/>
+
+    <!-- TF Coil 7 (140°) -->
+    <ellipse cx="-95" cy="-58" rx="18" ry="105" fill="url(#tfCoil3D)" stroke="#4a90d9" stroke-width="2"
+             transform="rotate(-8, -95, -58)" filter="url(#shadow)"/>
+
+    <!-- TF Coil 8 (160°) -->
+    <ellipse cx="-165" cy="-45" rx="18" ry="105" fill="url(#tfCoil3D)" stroke="#4a90d9" stroke-width="2"
+             transform="rotate(-3, -165, -45)" filter="url(#shadow)"/>
+
+    <!-- TF Coil 9 (180°) -->
+    <ellipse cx="-220" cy="-25" rx="18" ry="105" fill="url(#tfCoil3D)" stroke="#4a90d9" stroke-width="2"
+             transform="rotate(5, -220, -25)" filter="url(#shadow)"/>
+
+    <!-- ======= VACUUM VESSEL - parte frontal ======= -->
+    <ellipse cx="0" cy="-15" rx="240" ry="60" fill="none" stroke="url(#vesselGrad)" stroke-width="10"/>
+
+    <!-- ======= CRYOSTAT - parte superior frontal ======= -->
+    <ellipse cx="0" cy="-120" rx="300" ry="75" fill="none" stroke="#606080" stroke-width="4"/>
+
+    <!-- Tapa superior del criostato -->
+    <path d="M -300 -120 A 300 75 0 0 1 300 -120"
+          fill="url(#cryostatGrad)" opacity="0.7" stroke="#707090" stroke-width="3"/>
+
+    <!-- ======= PF COILS (anillos poloidales) ======= -->
+    <!-- PF superior -->
+    <ellipse cx="0" cy="-145" rx="260" ry="65" fill="none" stroke="#9b59b6" stroke-width="8" opacity="0.8"/>
+
+    <!-- PF intermedio superior -->
+    <ellipse cx="0" cy="-95" rx="280" ry="70" fill="none" stroke="#8e44ad" stroke-width="6" opacity="0.6"/>
+
+    <!-- ======= PUERTOS Y ACCESORIOS ======= -->
+    <!-- Puerto NBI (derecha) -->
+    <rect x="270" y="-30" width="60" height="40" rx="5" fill="#404050" stroke="#606070" stroke-width="2"/>
+    <rect x="330" y="-25" width="30" height="30" rx="3" fill="#505060" stroke="#707080" stroke-width="1"/>
+    <text x="345" y="-5" font-family="Arial" font-size="8" fill="#aaaaaa" text-anchor="middle">NBI</text>
+
+    <!-- Puerto ECRH (arriba) -->
+    <ellipse cx="80" cy="-165" rx="20" ry="8" fill="#404050" stroke="#606070" stroke-width="2"/>
+    <rect x="70" y="-185" width="20" height="20" fill="#505060" stroke="#707080" stroke-width="1"/>
+    <text x="80" y="-190" font-family="Arial" font-size="7" fill="#aaaaaa" text-anchor="middle">ECRH</text>
+
+    <!-- Puerto ICRF (izquierda) -->
+    <rect x="-330" y="-20" width="50" height="35" rx="5" fill="#404050" stroke="#606070" stroke-width="2"/>
+    <text x="-305" y="0" font-family="Arial" font-size="8" fill="#aaaaaa" text-anchor="middle">ICRF</text>
+
+    <!-- Puerto de diagnostico -->
+    <ellipse cx="-150" cy="-155" rx="15" ry="6" fill="#404050" stroke="#606070" stroke-width="2"/>
+    <text x="-150" y="-165" font-family="Arial" font-size="6" fill="#888888" text-anchor="middle">DIAG</text>
+
+  </g>
+
+  <!-- ================ VISTA DE CORTE (esquina) ================ -->
+  <g transform="translate(980, 680)">
+    <text x="0" y="-120" font-family="Arial" font-size="14" fill="#ffffff" text-anchor="middle" font-weight="bold">
+      Seccion Transversal
+    </text>
+
+    <!-- Escala pequeña -->
+    <rect x="-100" y="-110" width="200" height="200" rx="10" fill="#151525" stroke="#333355" stroke-width="2"/>
+
+    <!-- Dibujo de corte simplificado -->
+    <!-- Criostato -->
+    <circle cx="0" cy="0" r="90" fill="none" stroke="#505070" stroke-width="3"/>
+
+    <!-- TF Coil section -->
+    <ellipse cx="0" cy="0" rx="80" ry="85" fill="none" stroke="#2c5aa0" stroke-width="8"/>
+
+    <!-- Vacuum vessel -->
+    <ellipse cx="0" cy="0" rx="65" ry="70" fill="none" stroke="#707070" stroke-width="4"/>
+
+    <!-- Blanket -->
+    <ellipse cx="0" cy="0" rx="55" ry="58" fill="none" stroke="#2d4d2d" stroke-width="6"/>
+
+    <!-- First wall -->
+    <ellipse cx="0" cy="0" rx="45" ry="48" fill="none" stroke="#607080" stroke-width="2"/>
+
+    <!-- Plasma -->
+    <ellipse cx="0" cy="0" rx="38" ry="42" fill="url(#plasmaGrad3D)" opacity="0.8" filter="url(#glow3D)"/>
+
+    <!-- Centro -->
+    <circle cx="0" cy="0" r="3" fill="#ffffff"/>
+
+    <!-- Labels -->
+    <text x="0" y="105" font-family="Arial" font-size="8" fill="#888888" text-anchor="middle">R₀ = 1.5m</text>
+  </g>
+
+  <!-- ================ LEYENDA ================ -->
+  <g transform="translate(50, 150)">
+    <rect x="0" y="0" width="180" height="280" rx="10" fill="#151525" stroke="#333355" stroke-width="2"/>
+    <text x="90" y="25" font-family="Arial" font-size="14" fill="#ffffff" text-anchor="middle" font-weight="bold">COMPONENTES</text>
+
+    <!-- Items -->
+    <rect x="15" y="40" width="25" height="12" fill="url(#plasmaGrad3D)"/>
+    <text x="50" y="50" font-family="Arial" font-size="10" fill="#ffffff">Plasma (15 keV)</text>
+
+    <rect x="15" y="60" width="25" height="12" fill="url(#tfCoil3D)"/>
+    <text x="50" y="70" font-family="Arial" font-size="10" fill="#ffffff">TF Coils (18x, 25T)</text>
+
+    <rect x="15" y="80" width="25" height="12" fill="#8e44ad"/>
+    <text x="50" y="90" font-family="Arial" font-size="10" fill="#ffffff">PF Coils</text>
+
+    <rect x="15" y="100" width="25" height="12" fill="url(#csGrad)"/>
+    <text x="50" y="110" font-family="Arial" font-size="10" fill="#ffffff">Central Solenoid</text>
+
+    <rect x="15" y="120" width="25" height="12" fill="url(#vesselGrad)"/>
+    <text x="50" y="130" font-family="Arial" font-size="10" fill="#ffffff">Vacuum Vessel</text>
+
+    <rect x="15" y="140" width="25" height="12" fill="url(#blanketGrad)"/>
+    <text x="50" y="150" font-family="Arial" font-size="10" fill="#ffffff">Blanket (WCLL)</text>
+
+    <rect x="15" y="160" width="25" height="12" fill="url(#cryostatGrad)"/>
+    <text x="50" y="170" font-family="Arial" font-size="10" fill="#ffffff">Cryostat</text>
+
+    <rect x="15" y="180" width="25" height="12" fill="url(#supportGrad)"/>
+    <text x="50" y="190" font-family="Arial" font-size="10" fill="#ffffff">Gravity Support</text>
+
+    <!-- Specs -->
+    <line x1="10" y1="210" x2="170" y2="210" stroke="#333355" stroke-width="1"/>
+    <text x="90" y="228" font-family="Arial" font-size="11" fill="#aaaaaa" text-anchor="middle">ESPECIFICACIONES</text>
+
+    <text x="15" y="245" font-family="Arial" font-size="9" fill="#888888">P_fusion: 500 MW</text>
+    <text x="15" y="258" font-family="Arial" font-size="9" fill="#888888">Q factor: 10</text>
+    <text x="15" y="271" font-family="Arial" font-size="9" fill="#888888">I_p: 12 MA</text>
+  </g>
+
+  <!-- ================ DIMENSIONES ================ -->
+  <g transform="translate(50, 480)">
+    <rect x="0" y="0" width="180" height="140" rx="10" fill="#151525" stroke="#333355" stroke-width="2"/>
+    <text x="90" y="22" font-family="Arial" font-size="12" fill="#ffffff" text-anchor="middle" font-weight="bold">DIMENSIONES</text>
+
+    <text x="15" y="45" font-family="Arial" font-size="10" fill="#aaaaaa">Radio Mayor (R₀):</text>
+    <text x="165" y="45" font-family="Arial" font-size="10" fill="#ffffff" text-anchor="end">1.50 m</text>
+
+    <text x="15" y="62" font-family="Arial" font-size="10" fill="#aaaaaa">Radio Menor (a):</text>
+    <text x="165" y="62" font-family="Arial" font-size="10" fill="#ffffff" text-anchor="end">0.60 m</text>
+
+    <text x="15" y="79" font-family="Arial" font-size="10" fill="#aaaaaa">Elongacion (κ):</text>
+    <text x="165" y="79" font-family="Arial" font-size="10" fill="#ffffff" text-anchor="end">1.97</text>
+
+    <text x="15" y="96" font-family="Arial" font-size="10" fill="#aaaaaa">Criostato (R):</text>
+    <text x="165" y="96" font-family="Arial" font-size="10" fill="#ffffff" text-anchor="end">3.00 m</text>
+
+    <text x="15" y="113" font-family="Arial" font-size="10" fill="#aaaaaa">Altura Total:</text>
+    <text x="165" y="113" font-family="Arial" font-size="10" fill="#ffffff" text-anchor="end">4.00 m</text>
+
+    <text x="15" y="130" font-family="Arial" font-size="10" fill="#aaaaaa">Vol. Plasma:</text>
+    <text x="165" y="130" font-family="Arial" font-size="10" fill="#ffffff" text-anchor="end">10.6 m³</text>
+  </g>
+
+  <!-- ================ COMPARACION ================ -->
+  <g transform="translate(50, 660)">
+    <rect x="0" y="0" width="180" height="100" rx="10" fill="#151525" stroke="#333355" stroke-width="2"/>
+    <text x="90" y="20" font-family="Arial" font-size="11" fill="#ffffff" text-anchor="middle" font-weight="bold">vs OTROS TOKAMAKS</text>
+
+    <text x="15" y="40" font-family="Arial" font-size="9" fill="#4a90d9">TS-1:</text>
+    <text x="60" y="40" font-family="Arial" font-size="9" fill="#ffffff">R=1.5m, B=25T</text>
+
+    <text x="15" y="55" font-family="Arial" font-size="9" fill="#27ae60">SPARC:</text>
+    <text x="60" y="55" font-family="Arial" font-size="9" fill="#888888">R=1.85m, B=12T</text>
+
+    <text x="15" y="70" font-family="Arial" font-size="9" fill="#e74c3c">ITER:</text>
+    <text x="60" y="70" font-family="Arial" font-size="9" fill="#888888">R=6.2m, B=5.3T</text>
+
+    <text x="15" y="90" font-family="Arial" font-size="8" fill="#f39c12">TS-1: Campo mas alto (25T)</text>
+  </g>
+
+  <!-- Firma -->
+  <text x="600" y="870" font-family="Arial" font-size="12" fill="#555555" text-anchor="middle">
+    TOKASIM-RS | Francisco Molina-Burgos | Avermex Research Division | Enero 2026
+  </text>
+
+  <!-- Escala 3D -->
+  <g transform="translate(1050, 150)">
+    <line x1="0" y1="0" x2="100" y2="0" stroke="#ffffff" stroke-width="2"/>
+    <line x1="0" y1="-5" x2="0" y2="5" stroke="#ffffff" stroke-width="2"/>
+    <line x1="100" y1="-5" x2="100" y2="5" stroke="#ffffff" stroke-width="2"/>
+    <text x="50" y="18" font-family="Arial" font-size="11" fill="#ffffff" text-anchor="middle">~1 m</text>
+  </g>
+
+</svg>
