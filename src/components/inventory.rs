@@ -187,6 +187,84 @@ impl FacilityInventory {
             health: ComponentHealth::default(),
         });
 
+        // ========== BREEDING BLANKET ==========
+        // Tritium Breeding Ratio (TBR) > 1.1 required for self-sufficiency
+        equipment.push(Equipment {
+            id: "TK-BB-IB".to_string(),
+            name: "Inboard Breeding Blanket".to_string(),
+            category: EquipmentCategory::TokamakCore,
+            description: "HCPB (Helium-Cooled Pebble Bed) breeding blanket with Li4SiO4 + Be pebbles, inboard modules".to_string(),
+            location: "Vacuum Vessel Interior, Inboard".to_string(),
+            manufacturer: "KIT / Framatome".to_string(),
+            model: "BB-HCPB-IB-TS1".to_string(),
+            quantity: 16,  // Inboard modules
+            weight_kg: 80_000.0,  // Total inboard
+            power_kw: 0.0,  // Passive - generates heat
+            voltage_v: 0.0,
+            cooling_kw: 120_000.0,  // 120 MW thermal from neutrons
+            sil_rating: None,
+            redundancy: "Modular replacement".to_string(),
+            mtbf_hours: 30_000.0,  // ~3.5 years before replacement
+            health: ComponentHealth::default(),
+        });
+
+        equipment.push(Equipment {
+            id: "TK-BB-OB".to_string(),
+            name: "Outboard Breeding Blanket".to_string(),
+            category: EquipmentCategory::TokamakCore,
+            description: "HCPB breeding blanket with Li4SiO4 + Be pebbles, outboard modules with higher TBR".to_string(),
+            location: "Vacuum Vessel Interior, Outboard".to_string(),
+            manufacturer: "KIT / Framatome".to_string(),
+            model: "BB-HCPB-OB-TS1".to_string(),
+            quantity: 32,  // Outboard modules (more area)
+            weight_kg: 200_000.0,  // Total outboard
+            power_kw: 0.0,
+            voltage_v: 0.0,
+            cooling_kw: 280_000.0,  // 280 MW thermal
+            sil_rating: None,
+            redundancy: "Modular replacement".to_string(),
+            mtbf_hours: 30_000.0,
+            health: ComponentHealth::default(),
+        });
+
+        equipment.push(Equipment {
+            id: "TK-BB-TES".to_string(),
+            name: "Tritium Extraction System".to_string(),
+            category: EquipmentCategory::TokamakCore,
+            description: "Helium purge gas system for tritium extraction from breeding blanket pebbles".to_string(),
+            location: "Tritium Building, BB Interface".to_string(),
+            manufacturer: "AECL / Tritium Systems".to_string(),
+            model: "TES-HCPB-TS1".to_string(),
+            quantity: 1,
+            weight_kg: 15_000.0,
+            power_kw: 100.0,
+            voltage_v: 400.0,
+            cooling_kw: 50.0,
+            sil_rating: Some(2),
+            redundancy: "Dual extraction trains".to_string(),
+            mtbf_hours: 50_000.0,
+            health: ComponentHealth::default(),
+        });
+
+        equipment.push(Equipment {
+            id: "TK-BB-MULT".to_string(),
+            name: "Neutron Multiplier Assemblies".to_string(),
+            category: EquipmentCategory::TokamakCore,
+            description: "Beryllium pebble beds for neutron multiplication (n,2n) to achieve TBR > 1.1".to_string(),
+            location: "Inside Breeding Blanket Modules".to_string(),
+            manufacturer: "Materion".to_string(),
+            model: "Be-MULT-12mm".to_string(),
+            quantity: 48,  // Integrated in all BB modules
+            weight_kg: 25_000.0,  // Total Be inventory
+            power_kw: 0.0,
+            voltage_v: 0.0,
+            cooling_kw: 0.0,  // Cooled via blanket He
+            sil_rating: None,
+            redundancy: "Distributed in all modules".to_string(),
+            mtbf_hours: 50_000.0,
+            health: ComponentHealth::default(),
+        });
+
         // ========== MAGNET SYSTEMS ==========
         for i in 1..=18 {
             equipment.push(Equipment {

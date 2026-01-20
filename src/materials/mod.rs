@@ -63,6 +63,10 @@ pub enum Material {
     Lithium,
     /// Lead-lithium eutectic (PbLi)
     PbLi,
+    /// Lithium orthosilicate ceramic breeder (Li4SiO4)
+    Li4SiO4,
+    /// Lithium titanate ceramic breeder (Li2TiO3)
+    Li2TiO3,
 }
 
 /// Temperature-dependent material properties
@@ -452,6 +456,54 @@ impl MaterialDatabase {
             poisson_ratio: 0.5,
             alpha_coeffs: vec![2.1e-4],  // Volumetric
             yield_coeffs: vec![0.0],
+            tc: None,
+            jc_reference: None,
+        });
+
+        // ========================================================================
+        // Li4SiO4 - Lithium Orthosilicate Ceramic Breeder
+        // ========================================================================
+        // ITER Test Blanket Module reference material
+        // Excellent tritium release at T > 300°C
+        materials.insert(Material::Li4SiO4, MaterialProperties {
+            material: Material::Li4SiO4,
+            temp_range: (300.0, 1200.0),
+            density: 2390.0,  // kg/m³ (pebble bed ~60% packing)
+            melting_point: 1528.0,  // K (decomposition)
+            // k = 2.5 - 0.001T (ceramic, decreases with T)
+            k_coeffs: vec![2.5, -0.001],
+            // Cp = 1100 + 0.3T [J/(kg·K)]
+            cp_coeffs: vec![1100.0, 0.3],
+            rho_0: 1e12,  // Insulator
+            alpha_rho: 0.0,
+            t_ref: 300.0,
+            e_coeffs: vec![90e9],  // ~90 GPa
+            poisson_ratio: 0.25,
+            alpha_coeffs: vec![1.3e-5],
+            yield_coeffs: vec![100e6],  // Brittle ceramic
+            tc: None,
+            jc_reference: None,
+        });
+
+        // ========================================================================
+        // Li2TiO3 - Lithium Metatitanate Ceramic Breeder
+        // ========================================================================
+        // Alternative to Li4SiO4 with better irradiation stability
+        materials.insert(Material::Li2TiO3, MaterialProperties {
+            material: Material::Li2TiO3,
+            temp_range: (300.0, 1400.0),
+            density: 3430.0,  // kg/m³
+            melting_point: 1806.0,  // K
+            // k = 3.0 - 0.0015T
+            k_coeffs: vec![3.0, -0.0015],
+            cp_coeffs: vec![900.0, 0.25],
+            rho_0: 1e11,  // Insulator
+            alpha_rho: 0.0,
+            t_ref: 300.0,
+            e_coeffs: vec![120e9],
+            poisson_ratio: 0.24,
+            alpha_coeffs: vec![1.1e-5],
+            yield_coeffs: vec![120e6],
             tc: None,
             jc_reference: None,
         });
